@@ -16,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TenantContext::class, function () {
             return new TenantContext();
         });
+        $this->app->singleton(\App\Modules\Auth\Services\AuditLogger::class);
     }
 
     /**
@@ -25,6 +26,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Set default locale Indonesia
         setlocale(LC_TIME, 'id_ID.utf8', 'id_ID', 'id');
+
+        // Register User observer
+        \App\Models\User::observe(\App\Modules\Auth\Observers\UserObserver::class);
 
         Blueprint::macro('tenantAndAuditColumns', function (bool $withSoftDelete = true) {
             tenant_and_audit_columns($this, $withSoftDelete);
