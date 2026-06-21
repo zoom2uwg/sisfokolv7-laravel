@@ -32,7 +32,67 @@ class DemoSeeder extends Seeder
 
         app(TenantContext::class)->set($tenant->id);
 
-        // ─── 2. Buat Users per Role ────────────────────────────────────────
+        // ─── 1b. Academic Year, Tahun Ajaran, Semester ─────────────────────
+        $academicYear = \App\Models\AcademicYear::create([
+            'name' => '2026/2027',
+            'start_date' => '2026-07-01',
+            'end_date' => '2027-06-30',
+            'is_active' => true,
+        ]);
+
+        $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::create([
+            'id' => $academicYear->id,
+            'tenant_id' => $tenant->id,
+            'nama' => '2026/2027',
+            'tanggal_mulai' => '2026-07-01',
+            'tanggal_selesai' => '2027-06-30',
+            'aktif' => true,
+        ]);
+
+        $semester = \App\Modules\Academic\Models\Semester::create([
+            'tenant_id' => $tenant->id,
+            'tahun_ajaran_id' => $tahunAjaran->id,
+            'nama' => 1, // Semester 1 / Ganjil
+            'tanggal_mulai' => '2026-07-01',
+            'tanggal_selesai' => '2026-12-31',
+            'aktif' => true,
+        ]);
+
+        // ─── 1c. Subject & Room ────────────────────────────────────────────
+        $subject = \App\Models\Subject::create([
+            'tenant_id' => $tenant->id,
+            'academic_year_id' => $academicYear->id,
+            'name' => 'Matematika',
+            'code' => 'MTK',
+            'is_exam' => true,
+            'phase' => 'E',
+        ]);
+
+        $room = \App\Models\Room::create([
+            'name' => 'Ruang 101',
+            'code' => 'R101',
+            'capacity' => 40,
+        ]);
+
+        // ─── 1d. Classroom & Kelas ─────────────────────────────────────────
+        $classroom = \App\Models\Classroom::create([
+            'tenant_id' => $tenant->id,
+            'academic_year_id' => $academicYear->id,
+            'name' => 'Kelas X-A',
+            'level' => '10',
+            'major' => 'Umum',
+            'capacity' => 36,
+        ]);
+
+        $kelas = \App\Modules\Academic\Models\Kelas::create([
+            'id' => $classroom->id,
+            'tenant_id' => $tenant->id,
+            'nama' => 'Kelas X-A',
+            'tingkat' => 10,
+            'kapasitas' => 36,
+        ]);
+
+        // ─── 2. Users per Role ─────────────────────────────────────────────
         $users = [
             [
                 'username' => 'admin.sekolah',
@@ -72,6 +132,9 @@ class DemoSeeder extends Seeder
         ];
 
         $createdUsers = [];
+        $createdEmployees = [];
+        $createdGurus = [];
+
         foreach ($users as $u) {
             $user = User::create([
                 'tenant_id' => $tenant->id,
@@ -84,19 +147,52 @@ class DemoSeeder extends Seeder
             ]);
             $user->assignRole($u['role']);
             $createdUsers[$u['role']] = $user;
+
+            // Create matching Employee & Guru
+            $employee = \App\Models\Employee::create([
+                'user_id' => $user->id,
+                'code' => 'EMP-' . strtoupper($u['username']),
+                'name' => $u['nama'],
+                'gender' => 'L',
+                'position' => $u['role'],
+                'status' => 'aktif',
+            ]);
+            $createdEmployees[$u['role']] = $employee;
+
+            $guru = \App\Modules\Academic\Models\Guru::create([
+                'tenant_id' => $tenant->id,
+                'nip' => 'NIP-' . strtoupper($u['username']),
+                'nama' => $u['nama'],
+                'jenis_kelamin' => 'L',
+                'jabatan' => $u['role'],
+                'aktif' => true,
+            ]);
+            $createdGurus[$u['role']] = $guru;
+
+            // Associate user userable
+            $user->update([
+                'userable_type' => \App\Models\Employee::class,
+                'userable_id' => $employee->id,
+            ]);
         }
 
-        // ─── 3. Buat Guru ─────────────────────────────────────────────────
-        Guru::create([
-            'tenant_id'     => $tenant->id,
-            'nip'           => '199001012020011001',
-            'nama'          => 'Guru Piket Demo',
-            'jenis_kelamin' => 'L',
-            'jabatan'       => 'Guru Piket',
-            'aktif'         => true,
+        // Link Wali Kelas
+        $kelas->update(['wali_kelas_id' => $createdGurus['homeroom-teacher']->id]);
+        $classroom->update(['homeroom_teacher_id' => $createdEmployees['homeroom-teacher']->id]);
+
+        // ─── 2b. Teaching Schedule ─────────────────────────────────────────
+        $schedule = \App\Models\Schedule::create([
+            'academic_year_id' => $academicYear->id,
+            'classroom_id' => $classroom->id,
+            'subject_id' => $subject->id,
+            'employee_id' => $createdEmployees['teacher']->id,
+            'room_id' => $room->id,
+            'day_id' => 1, // Senin
+            'time_slot_id' => 1,
+            'description' => 'Matematika Kelas X-A',
         ]);
 
-        // ─── 4. Buat 20 Siswa Demo ─────────────────────────────────────────
+        // ─── 3. Buat 20 Siswa Demo ─────────────────────────────────────────
         $siswaData = [
             ['nis' => '2024001', 'nama' => 'Andi Pratama',        'jk' => 'L'],
             ['nis' => '2024002', 'nama' => 'Budi Santoso',        'jk' => 'L'],
@@ -132,6 +228,26 @@ class DemoSeeder extends Seeder
                 'status'       => 'aktif',
             ]);
 
+            // Create global Student record
+            $student = \App\Models\Student::create([
+                'id' => $siswa->id,
+                'academic_year_id' => $academicYear->id,
+                'classroom_id' => $classroom->id,
+                'nis' => $s['nis'],
+                'name' => $s['nama'],
+                'gender' => $s['jk'],
+                'is_active' => true,
+            ]);
+
+            // Assign Student to Classroom in Academic Module
+            \App\Modules\Academic\Models\KelasSiswa::create([
+                'kelas_id' => $kelas->id,
+                'siswa_id' => $siswa->id,
+                'tahun_ajaran_id' => $tahunAjaran->id,
+                'tenant_id' => $tenant->id,
+                'no_urut' => count($siswaDibuat) + 1,
+            ]);
+
             // Buat User untuk setiap siswa
             $userSiswa = User::create([
                 'tenant_id'     => $tenant->id,
@@ -141,12 +257,31 @@ class DemoSeeder extends Seeder
                 'tipe'          => 'siswa',
                 'password'      => Hash::make('demo1234'),
                 'aktif'         => true,
-                'userable_type' => Siswa::class,
+                'userable_type' => \App\Modules\Academic\Models\Siswa::class,
                 'userable_id'   => $siswa->id,
             ]);
             $userSiswa->assignRole('student');
 
-            $siswaDibuat[] = ['siswa' => $siswa, 'user' => $userSiswa];
+            $siswaDibuat[] = ['siswa' => $siswa, 'user' => $userSiswa, 'student' => $student];
+        }
+
+        // ─── 4. Subject Descriptions for Rapor ───────────────────────────
+        $predicates = ['A', 'B', 'C', 'D'];
+        $descriptions = [
+            'A' => 'Sangat menguasai seluruh materi pembelajaran matematika dengan sangat baik, mampu memecahkan masalah kompleks secara mandiri.',
+            'B' => 'Menguasai kompetensi dasar matematika dengan baik dan aktif berpartisipasi dalam pemecahan masalah kelas.',
+            'C' => 'Cukup menguasai kompetensi dasar matematika, memerlukan pendampingan pada latihan mandiri yang lebih kompleks.',
+            'D' => 'Kurang memenuhi batas kompetensi minimal matematika, memerlukan bimbingan intensif dan latihan tambahan.',
+        ];
+
+        foreach ($predicates as $pred) {
+            \App\Models\SubjectDescription::create([
+                'tenant_id' => $tenant->id,
+                'subject_id' => $subject->id,
+                'academic_year_id' => $academicYear->id,
+                'category' => $pred,
+                'description' => $descriptions[$pred],
+            ]);
         }
 
         // ─── 5. Buat Data Presensi 7 Hari Terakhir ────────────────────────
