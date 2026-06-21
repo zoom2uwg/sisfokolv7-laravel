@@ -20,8 +20,7 @@ class ImpersonationService
 
     public function start(User $impersonator, User $target, Request $request): void
     {
-        session()->put('impersonated_by', $impersonator->id);
-        Auth::login($target);
+        $impersonator->impersonate($target);
         $this->audit->log(
             'impersonate.start', $impersonator,
             ['target_user_id' => $target->id, 'target_username' => $target->username],
@@ -31,13 +30,18 @@ class ImpersonationService
 
     public function stop(Request $request): ?User
     {
-        $impersonatorId = session()->pull('impersonated_by');
+        $impersonatorId = session()->get('impersonated_by');
         if (! $impersonatorId) return null;
 
         $impersonator = User::find($impersonatorId);
         if ($impersonator) {
             $currentUser = $request->user();
-            Auth::login($impersonator);
+            if ($currentUser && method_exists($currentUser, 'leaveImpersonation')) {
+                $currentUser->leaveImpersonation();
+            } else {
+                Auth::login($impersonator);
+                session()->forget('impersonated_by');
+            }
             $this->audit->log(
                 'impersonate.stop', $impersonator,
                 ['was_impersonating_user_id' => $currentUser?->id],
