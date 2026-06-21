@@ -52,4 +52,9 @@ class Kelas extends Model
     {
         return $this->hasMany(Jadwal::class, 'kelas_id');
     }
+
+    public function jenjang(): string
+    {
+        return $this->branch?->jenjang ?? 'SMP';
+    }
 }

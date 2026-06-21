@@ -19,7 +19,12 @@ class PluginRegistryServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Boot each plugin's service provider (deferred to per-tenant request in middleware for tenant_plugins)
-        // For now just call PluginContext for globally active plugins
+        $registry = $this->app->make(PluginRegistry::class);
+        foreach ($registry->all() as $plugin) {
+            $provider = $plugin->providerClass();
+            if ($provider && class_exists($provider)) {
+                $this->app->register($provider);
+            }
+        }
     }
 }
