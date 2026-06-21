@@ -75,7 +75,6 @@ class DemoSeeder extends Seeder
 
         // ─── 1d. Classroom & Kelas ─────────────────────────────────────────
         $classroom = \App\Models\Classroom::create([
-            'tenant_id' => $tenant->id,
             'academic_year_id' => $academicYear->id,
             'name' => 'Kelas X-A',
             'level' => '10',
