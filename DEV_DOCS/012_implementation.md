@@ -35,8 +35,8 @@ Semua 12 epic plan tersimpan di `DOCS/superpowers/plans/`:
 | File | Epic | Status |
 |------|------|--------|
 | `2026-06-20-epic-1-setup-fondasi.md` | Setup + Fondasi | ✅ SELESAI |
-| `2026-06-20-epic-2-auth-module.md` | Auth Module Full | ⏳ pending |
-| `2026-06-20-epic-3-rbac-builder.md` | RBAC Builder + Field ACL + Menu Renderer | ⏳ pending |
+| `2026-06-20-epic-2-auth-module.md` | Auth Module Full | ✅ SELESAI |
+| `2026-06-20-epic-3-rbac-builder.md` | RBAC Builder + Field ACL + Menu Renderer | ✅ SELESAI |
 | `2026-06-20-epic-4-plugin-infra.md` | Plugin System Infrastructure | ⏳ pending |
 | `2026-06-20-epic-5-academic.md` | Academic Module (11 tables) | ⏳ pending |
 | `2026-06-20-epic-6-evaluation.md` | Evaluation Module (7 tables) | ⏳ pending |
