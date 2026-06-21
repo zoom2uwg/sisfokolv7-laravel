@@ -54,9 +54,12 @@ class MenuRendererTest extends TestCase
     public function test_menu_filtered_by_permission_required(): void
     {
         $this->seed([RolePermissionSeeder::class, MenuSeeder::class]);
+        \Spatie\Permission\Models\Permission::findOrCreate('dashboard.view', 'web');
+
         $tenant = Tenant::create(['nama' => 'T1', 'npsn' => '11111111']);
         $user = User::factory()->create(['tenant_id' => $tenant->id]);
-        $user->assignRole('student'); // student only has dashboard.view + raport.view
+        $user->assignRole('student'); // student only has basic roles
+        $user->givePermissionTo('dashboard.view');
 
         $items = \App\Support\MenuRenderer::forUser($user);
         $codes = collect($items)->pluck('kode');
