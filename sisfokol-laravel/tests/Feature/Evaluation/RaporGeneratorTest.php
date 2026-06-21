@@ -90,8 +90,7 @@ class RaporGeneratorTest extends TestCase
             'status' => 'aktif',
         ]);
 
-        $this->student = Student::create([
-            'id' => $this->siswa->id,
+        $this->student = new Student([
             'academic_year_id' => $this->academicYear->id,
             'classroom_id' => $this->classroom->id,
             'nis' => '2026002',
@@ -99,6 +98,8 @@ class RaporGeneratorTest extends TestCase
             'gender' => 'P',
             'is_active' => true,
         ]);
+        $this->student->id = $this->siswa->id;
+        $this->student->save();
     }
 
     /** @test */
