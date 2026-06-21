@@ -82,6 +82,7 @@ class GradeCalculatorTest extends TestCase
             'tenant_id' => $this->tenant->id,
             'academic_year_id' => $this->academicYear->id,
             'name' => 'Kelas X-A',
+            'level' => '10',
         ]);
 
         // 6. Create Subject
