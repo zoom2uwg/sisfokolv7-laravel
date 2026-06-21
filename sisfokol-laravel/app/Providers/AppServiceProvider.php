@@ -14,6 +14,8 @@ use App\Modules\Academic\Models\Kelas;
 use App\Modules\Academic\Policies\KelasPolicy;
 use App\Modules\Academic\Models\Jadwal;
 use App\Modules\Academic\Policies\JadwalPolicy;
+use App\Models\Attendance;
+use App\Modules\Presence\Observers\AttendanceObserver;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -42,6 +44,7 @@ class AppServiceProvider extends ServiceProvider
         // Register observers
         \App\Models\User::observe(\App\Modules\Auth\Observers\UserObserver::class);
         Siswa::observe(SiswaObserver::class);
+        Attendance::observe(AttendanceObserver::class);
 
         // Register Policies
         Gate::policy(AuditLog::class, AuditLogPolicy::class);
