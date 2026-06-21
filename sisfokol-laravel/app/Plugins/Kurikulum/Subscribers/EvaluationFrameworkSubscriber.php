@@ -56,7 +56,7 @@ class EvaluationFrameworkSubscriber
     public function subscribe($events): array
     {
         return [
-            EvaluationResolveFramework::class => 'handleEvaluationResolveFramework',
+            EvaluationResolveFramework::class => static::class . '@handleEvaluationResolveFramework',
         ];
     }
 }

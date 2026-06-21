@@ -22,7 +22,13 @@ class KurikulumPluginTest extends TestCase
     public function test_evaluation_framework_event_resolves_via_kurikulum(): void
     {
         $this->seed([RolePermissionSeeder::class, SuperAdminSeeder::class]);
+
+        // Register provider AND explicitly subscribe the listener
+        // (provider registered after app boot may not fire EventServiceProvider subscription)
         $this->app->register(KurikulumServiceProvider::class);
+        $this->app['events']->subscribe(
+            \App\Plugins\Kurikulum\Subscribers\EvaluationFrameworkSubscriber::class
+        );
 
         [$tenant, $mapel, $kelas, $kurikulum] = $this->setupScenario();
 
@@ -103,31 +109,35 @@ class KurikulumPluginTest extends TestCase
     private function setupScenario(): array
     {
         $tenant = Tenant::create(['nama' => 'T1', 'npsn' => '11111111']);
-        app(TenantContext::class)->set(tenantId: $tenant->id);
+
+        // Set tenant context FIRST, before any plugin/cache checks
+        app(TenantContext::class)->set($tenant->id);
 
         $plugin = \App\Plugins\Infrastructure\Models\Plugin::updateOrCreate(
             ['kode' => 'kurikulum'],
             [
-                'nama' => 'Kurikulum',
-                'versi' => '1.0.0',
-                'is_core' => false,
+                'nama'           => 'Kurikulum',
+                'versi'          => '1.0.0',
+                'is_core'        => false,
                 'provider_class' => \App\Plugins\Kurikulum\Providers\KurikulumServiceProvider::class,
-                'aktif_global' => true,
+                'aktif_global'   => true,
             ]
         );
         \App\Plugins\Infrastructure\Models\TenantPlugin::create([
             'tenant_id' => $tenant->id,
             'plugin_id' => $plugin->id,
-            'aktif' => true,
+            'aktif'     => true,
         ]);
 
+        // Flush cache AFTER creating TenantPlugin so fresh query runs next time
         app(\App\Support\PluginRegistry::class)->clearTenantCache($tenant->id, 'kurikulum');
 
         $kurikulum = Kurikulum::create(['kurikulum_id' => 'KURMER', 'nama_kurikulum' => 'Kurikulum Merdeka', 'status_aktif' => true, 'tenant_id' => $tenant->id]);
-        $struktur = StrukturKurikulum::create(['kurikulum_id' => $kurikulum->id, 'jenjang' => 'SMP', 'kelas' => '7', 'fase' => 'D', 'jenis_kegiatan' => 'intrakurikuler', 'tenant_id' => $tenant->id]);
+        $struktur  = StrukturKurikulum::create(['kurikulum_id' => $kurikulum->id, 'jenjang' => 'SMP', 'kelas' => '7', 'fase' => 'D', 'jenis_kegiatan' => 'intrakurikuler', 'tenant_id' => $tenant->id]);
         KomponenKompetensi::create(['struktur_id' => $struktur->id, 'kode_kompetensi' => 'KI-3', 'teks_kompetensi' => 'Memahami...', 'pendekatan_pedagogis' => 'deep_learning', 'tenant_id' => $tenant->id]);
         $mapel = Mapel::create(['kode' => 'MTH', 'nama' => 'Matematika', 'kkm' => 75, 'tenant_id' => $tenant->id, 'kurikulum_id' => $kurikulum->id]);
         $kelas = Kelas::create(['nama' => '7-A', 'tingkat' => 7, 'tenant_id' => $tenant->id]);
+
         return [$tenant, $mapel, $kelas, $kurikulum];
     }
 }

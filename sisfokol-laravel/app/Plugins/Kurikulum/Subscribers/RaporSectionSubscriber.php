@@ -24,7 +24,7 @@ class RaporSectionSubscriber
     public function subscribe($events): array
     {
         return [
-            RaportRenderSection::class => 'handleRaportRenderSection',
+            RaportRenderSection::class => [static::class, 'handleRaportRenderSection'],
         ];
     }
 }
