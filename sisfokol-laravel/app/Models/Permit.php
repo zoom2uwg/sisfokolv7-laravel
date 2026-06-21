@@ -25,6 +25,7 @@ class Permit extends Model
         'approved_by',
         'approved_at',
         'attachment_path',
+        'note',
         'legacy_id',
     ];
 
