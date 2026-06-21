@@ -43,5 +43,8 @@ class AppServiceProvider extends ServiceProvider
         Blueprint::macro('auditColumns', function (bool $withSoftDelete = true) {
             audit_columns($this, $withSoftDelete);
         });
+
+        // Register custom Blade directives for Field ACL
+        \App\Support\BladeDirectives::register();
     }
 }

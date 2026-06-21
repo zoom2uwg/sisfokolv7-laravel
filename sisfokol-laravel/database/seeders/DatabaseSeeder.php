@@ -19,6 +19,8 @@ class DatabaseSeeder extends Seeder
             AttendanceTimeSeeder::class,
             UserSeeder::class,
             ClassroomSeeder::class,
+            MenuSeeder::class,
+            FieldSeeder::class,
         ]);
     }
 }
