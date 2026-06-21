@@ -46,6 +46,7 @@ class AuthServiceProvider extends ServiceProvider
         \App\Modules\Finance\Models\ItemPembayaran::class => \App\Modules\Finance\Policies\ItemPembayaranPolicy::class,
         \App\Modules\Finance\Models\Pembayaran::class => \App\Modules\Finance\Policies\PembayaranPolicy::class,
         \App\Modules\Finance\Models\TabunganSiswa::class => \App\Modules\Finance\Policies\TabunganPolicy::class,
+        \App\Plugins\Kurikulum\Models\Kurikulum::class => \App\Plugins\Kurikulum\Policies\KurikulumPolicy::class,
     ];
 
     /**
