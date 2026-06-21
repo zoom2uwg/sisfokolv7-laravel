@@ -37,7 +37,7 @@ class AuditLoggerTest extends TestCase
 
         app(AuditLogger::class)->log('e', $user, ['new' => 1], $request, ['old' => 2]);
 
-        $log = \App\Modules\Auth\Models\AuditLog::first();
+        $log = \App\Modules\Auth\Models\AuditLog::where('event', 'e')->first();
         $this->assertEquals(['new' => 1], $log->new_values);
         $this->assertEquals(['old' => 2], $log->old_values);
     }

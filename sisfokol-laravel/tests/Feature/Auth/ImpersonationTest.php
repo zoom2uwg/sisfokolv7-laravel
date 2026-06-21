@@ -17,6 +17,7 @@ class ImpersonationTest extends TestCase
         parent::setUp();
         $this->seed([RolePermissionSeeder::class, SuperAdminSeeder::class]);
         config(['impersonate.enabled' => true]);
+        app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
     }
 
     public function test_impersonation_disabled_returns_404(): void
@@ -32,6 +33,7 @@ class ImpersonationTest extends TestCase
 
     public function test_superadmin_can_impersonate_any_user(): void
     {
+        $this->withoutExceptionHandling();
         $superadmin = User::where('username', 'superadmin')->first();
         $target = User::factory()->create(['nama' => 'Target User']);
 
@@ -39,8 +41,8 @@ class ImpersonationTest extends TestCase
             ->post("/impersonate/{$target->id}/start");
 
         $response->assertRedirect('/dashboard');
-        $this->assertEquals($superadmin->id, session('impersonated_by'));
-        $this->assertEquals($target->id, auth()->id());
+        $response->assertSessionHas('impersonated_by', $superadmin->id);
+        $this->assertAuthenticatedAs($target);
     }
 
     public function test_stop_returns_to_original(): void
