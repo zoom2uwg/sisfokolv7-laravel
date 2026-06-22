@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
             $table->foreignId('subject_type_id')->nullable()->constrained('subject_types')->nullOnDelete();
             $table->string('code', 50);
             $table->string('name', 200);

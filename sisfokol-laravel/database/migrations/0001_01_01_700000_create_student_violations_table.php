@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('student_violations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
+            $table->foreignId('student_id')->constrained('siswa')->cascadeOnDelete();
             $table->foreignId('violation_point_id')->constrained('violation_points')->restrictOnDelete();
             $table->foreignId('employee_id')->nullable()->constrained('employees')->nullOnDelete(); // pelapor
             $table->date('date');

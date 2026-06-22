@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('subject_attendances', function (Blueprint $table) {
             $table->id();
             $table->foreignId('schedule_id')->constrained('schedules')->cascadeOnDelete();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
+            $table->foreignId('student_id')->constrained('siswa')->cascadeOnDelete();
             $table->date('date');
             $table->string('status', 20)->default('present'); // present, absent, sick, permit
             $table->text('note')->nullable();

@@ -10,10 +10,10 @@ return new class extends Migration
     {
         Schema::create('student_promotions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
-            $table->foreignId('from_classroom_id')->constrained('classrooms')->restrictOnDelete();
-            $table->foreignId('to_classroom_id')->constrained('classrooms')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
+            $table->foreignId('student_id')->constrained('siswa')->cascadeOnDelete();
+            $table->foreignId('from_classroom_id')->constrained('kelas')->restrictOnDelete();
+            $table->foreignId('to_classroom_id')->constrained('kelas')->restrictOnDelete();
             $table->string('status', 50)->default('promoted'); // promoted, not_promoted, graduated
             $table->text('note')->nullable();
             $table->string('legacy_id', 50)->nullable()->index();

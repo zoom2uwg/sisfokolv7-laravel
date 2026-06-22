@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('employee_subject', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->foreignId('subject_id')->constrained('subjects')->cascadeOnDelete();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
+            $table->foreignId('subject_id')->constrained('mapel')->cascadeOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
             $table->timestamps();
 
             $table->unique(['employee_id', 'subject_id', 'academic_year_id']);

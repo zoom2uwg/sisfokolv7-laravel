@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
-            $table->foreignId('classroom_id')->constrained('classrooms')->restrictOnDelete();
-            $table->foreignId('subject_id')->constrained('subjects')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
+            $table->foreignId('classroom_id')->constrained('kelas')->restrictOnDelete();
+            $table->foreignId('subject_id')->constrained('mapel')->restrictOnDelete();
             $table->foreignId('employee_id')->constrained('employees')->restrictOnDelete(); // teacher
             $table->foreignId('room_id')->nullable()->constrained('rooms')->nullOnDelete();
             $table->foreignId('day_id')->constrained('days')->restrictOnDelete();

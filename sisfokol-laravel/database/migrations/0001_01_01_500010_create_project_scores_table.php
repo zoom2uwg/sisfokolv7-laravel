@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('project_scores', function (Blueprint $table) {
             $table->id();
             $table->foreignId('project_id')->constrained('projects')->cascadeOnDelete();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
+            $table->foreignId('student_id')->constrained('siswa')->cascadeOnDelete();
             $table->decimal('score', 5, 2)->nullable();
             $table->string('predicate', 10)->nullable();
             $table->text('note')->nullable();

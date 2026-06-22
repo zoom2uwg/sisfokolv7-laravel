@@ -11,7 +11,7 @@ return new class extends Migration
         Schema::create('homeroom_teachers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('employee_id')->constrained('employees')->cascadeOnDelete();
-            $table->foreignId('classroom_id')->unique()->constrained('classrooms')->cascadeOnDelete();
+            $table->foreignId('classroom_id')->unique()->constrained('kelas')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
 

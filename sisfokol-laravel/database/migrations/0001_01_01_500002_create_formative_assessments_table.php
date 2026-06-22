@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('formative_assessments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
-            $table->foreignId('subject_id')->constrained('subjects')->cascadeOnDelete();
-            $table->foreignId('classroom_id')->constrained('classrooms')->cascadeOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
+            $table->foreignId('subject_id')->constrained('mapel')->cascadeOnDelete();
+            $table->foreignId('classroom_id')->constrained('kelas')->cascadeOnDelete();
             $table->string('name', 200); // nama asesmen / kuis / ulangan harian
             $table->date('assessment_date');
             $table->text('description')->nullable();

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('payment_items', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
             $table->string('name', 200); // SPP, Uang Pangkal, Ujian, dll
             $table->string('code', 50)->nullable();
             $table->decimal('amount', 15, 2)->default(0);

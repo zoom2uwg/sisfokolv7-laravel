@@ -11,8 +11,8 @@ return new class extends Migration
         Schema::create('students', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->nullable()->unique()->constrained('users')->nullOnDelete();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
-            $table->foreignId('classroom_id')->constrained('classrooms')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
+            $table->foreignId('classroom_id')->constrained('kelas')->restrictOnDelete();
             $table->string('nis', 100)->unique(); // Nomor Induk Siswa
             $table->string('nisn', 100)->nullable()->unique(); // Nomor Induk Siswa Nasional
             $table->string('name', 200);

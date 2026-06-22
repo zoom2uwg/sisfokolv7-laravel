@@ -22,6 +22,9 @@ return new class extends Migration {
             $table->string('agama', 20)->default('Islam');
             $table->enum('status', ['aktif', 'lulus', 'pindah', 'keluar'])->default('aktif');
             $table->string('qrcode', 100)->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
+            $table->unsignedBigInteger('academic_year_id')->nullable();
+            $table->unsignedBigInteger('classroom_id')->nullable();
             $table->timestamps();
             $table->unique(['tenant_id', 'nis']);
             $table->index(['tenant_id', 'status']);

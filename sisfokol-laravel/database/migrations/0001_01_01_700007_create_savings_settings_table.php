@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('savings_settings', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
             $table->decimal('min_debit', 15, 2)->default(0);
             $table->decimal('max_credit', 15, 2)->default(0);
             $table->decimal('min_balance', 15, 2)->default(0);

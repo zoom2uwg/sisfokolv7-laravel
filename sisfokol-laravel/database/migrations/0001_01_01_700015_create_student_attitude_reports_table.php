@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('student_attitude_reports', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
+            $table->foreignId('student_id')->constrained('siswa')->cascadeOnDelete();
             $table->tinyInteger('semester')->default(1);
             $table->string('category', 50); // spiritual, sosial, dll
             $table->string('predicate', 10)->nullable(); // A/B/C/D

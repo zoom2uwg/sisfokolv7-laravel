@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::create('student_extracurricular', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete();
+            $table->foreignId('student_id')->constrained('siswa')->cascadeOnDelete();
             $table->foreignId('extracurricular_id')->constrained('extracurriculars')->cascadeOnDelete();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
             $table->string('score', 10)->nullable(); // nilai predikat A/B/C/D
             $table->text('description')->nullable();
             $table->timestamps();

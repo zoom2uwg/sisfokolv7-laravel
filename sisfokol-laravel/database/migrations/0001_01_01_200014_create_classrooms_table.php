@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('classrooms', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
             $table->string('name', 50); // e.g. X IPA 1
             $table->string('level', 20); // X, XI, XII
             $table->string('major', 100)->nullable(); // IPA, IPS, etc

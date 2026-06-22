@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('curriculum_competencies', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
-            $table->foreignId('subject_id')->constrained('subjects')->cascadeOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
+            $table->foreignId('subject_id')->constrained('mapel')->cascadeOnDelete();
             $table->string('phase', 20); // E, F
             $table->string('code', 50); // nomor TP
             $table->text('description');

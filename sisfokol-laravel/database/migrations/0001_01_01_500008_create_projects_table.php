@@ -10,8 +10,8 @@ return new class extends Migration
     {
         Schema::create('projects', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('academic_year_id')->constrained('academic_years')->restrictOnDelete();
-            $table->foreignId('classroom_id')->constrained('classrooms')->cascadeOnDelete();
+            $table->foreignId('academic_year_id')->constrained('tahun_ajaran')->restrictOnDelete();
+            $table->foreignId('classroom_id')->constrained('kelas')->cascadeOnDelete();
             $table->string('name', 200);
             $table->text('description')->nullable();
             $table->date('start_date')->nullable();
