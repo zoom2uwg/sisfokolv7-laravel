@@ -8,18 +8,18 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('subject_types', function (Blueprint $table) {
+        Schema::create('mapel_jenis', function (Blueprint $table) {
             $table->id();
-            $table->string('code', 50)->unique();
-            $table->string('name', 100);
-            $table->text('description')->nullable();
+            tenant_and_audit_columns($table);
+            $table->string('nama', 50);            // 'Wajib','Muatan Lokal','Peminatan'
+            $table->string('kode', 30)->nullable();
             $table->timestamps();
-            $table->softDeletes();
+            $table->unique(['tenant_id', 'nama']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('subject_types');
+        Schema::dropIfExists('mapel_jenis');
     }
 };

@@ -7,17 +7,10 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up(): void
     {
-        Schema::create('tahun_ajaran', function (Blueprint $table) {
-            $table->id();
-            tenant_and_audit_columns($table);
-            $table->string('nama', 20);            // '2026/2027'
-            $table->date('tanggal_mulai');
-            $table->date('tanggal_selesai');
-            $table->boolean('aktif')->default(false);
-            $table->timestamps();
-            $table->unique(['tenant_id', 'nama']);
-            $table->index(['tenant_id', 'aktif']);
-        });
+        // Table tahun_ajaran is now created in global migrations (0001_01_01_200001_create_academic_years_table.php)
     }
-    public function down(): void { Schema::dropIfExists('tahun_ajaran'); }
+    public function down(): void
+    {
+        //
+    }
 };
