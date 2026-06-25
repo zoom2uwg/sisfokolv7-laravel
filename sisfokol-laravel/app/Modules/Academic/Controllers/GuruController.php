@@ -23,7 +23,7 @@ class GuruController extends Controller
             'view'      => 'academic.guru',
             'route'     => 'academic.guru',
             'authorize' => 'guru',
-            'authType'  => 'permission',  // Gate::authorize('guru.view'), etc.
+            'authType'  => 'policy',  // Uses GuruPolicy
             'search'    => ['nama', 'nip', 'email'],
             'rules'     => [
                 'store' => [
