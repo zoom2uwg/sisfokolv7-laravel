@@ -49,21 +49,15 @@ class CrudlfixRbacTest extends TestCase
 
         // Admin for Tenant 1
         $this->admin1 = User::factory()->create(['tenant_id' => $this->tenant1->id]);
-        $registrar->setPermissionsTeamId($this->tenant1->id);
         $this->admin1->assignRole('admin');
-        $registrar->setPermissionsTeamId(null);
 
         // Teacher for Tenant 1
         $this->teacher1 = User::factory()->create(['tenant_id' => $this->tenant1->id]);
-        $registrar->setPermissionsTeamId($this->tenant1->id);
         $this->teacher1->assignRole('teacher');
-        $registrar->setPermissionsTeamId(null);
 
         // Student for Tenant 1
         $this->student1 = User::factory()->create(['tenant_id' => $this->tenant1->id]);
-        $registrar->setPermissionsTeamId($this->tenant1->id);
         $this->student1->assignRole('student');
-        $registrar->setPermissionsTeamId(null);
     }
 
     // ─── POLICY-BASED AUTH (SiswaController) ───────────────────────
