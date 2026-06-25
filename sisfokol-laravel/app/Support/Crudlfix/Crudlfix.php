@@ -55,11 +55,10 @@ trait Crudlfix
             if ($model) {
                 Gate::authorize($action, $model);
             } else {
-                // For viewAny/create, pass the model class
                 Gate::authorize($action, $cfg->model);
             }
         } elseif ($cfg->authType === 'permission' && $cfg->authorize) {
-            // Permission mode: use $user->can() with Spatie team context
+            // Permission mode: Spatie permission check
             $permission = "{$cfg->authorize}.{$action}";
             $user = auth()->user();
 
@@ -67,16 +66,8 @@ trait Crudlfix
                 abort(403, 'Tidak memiliki akses.');
             }
 
-            // Set Spatie team context for team-based permissions
-            $registrar = app(\Spatie\Permission\PermissionRegistrar::class);
-            $originalTeamId = $registrar->getPermissionsTeamId();
-            $registrar->setPermissionsTeamId($user->tenant_id ?? 0);
-
-            $hasPermission = $user->can($permission);
-
-            $registrar->setPermissionsTeamId($originalTeamId);
-
-            if (!$hasPermission) {
+            // Don't set team context — permissions are global, let Spatie resolve
+            if (!$user->can($permission)) {
                 abort(403, 'Tidak memiliki akses.');
             }
         }
