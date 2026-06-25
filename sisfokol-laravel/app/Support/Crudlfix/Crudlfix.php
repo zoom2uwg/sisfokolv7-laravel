@@ -59,8 +59,13 @@ trait Crudlfix
                 Gate::authorize($action, $cfg->model);
             }
         } elseif ($cfg->authType === 'permission' && $cfg->authorize) {
-            // Permission mode: Gate::authorize('prefix.action')
-            Gate::authorize("{$cfg->authorize}.{$action}");
+            // Permission mode: use $user->can() for Spatie wildcard support
+            $permission = "{$cfg->authorize}.{$action}";
+            $user = auth()->user();
+
+            if (!$user || !$user->can($permission)) {
+                abort(403, 'Tidak memiliki akses.');
+            }
         }
         // null/absent → no in-controller auth (route middleware handles it)
     }
