@@ -2,6 +2,7 @@
 
 namespace App\Support\Crudlfix;
 
+use App\Support\TenantContext;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Database\Eloquent\Model;
@@ -18,6 +19,10 @@ use Illuminate\View\View;
  *   - 'policy'     → Gate::authorize('ability', $model) [policy-based]
  *   - 'permission' → Gate::authorize('permission.key')   [direct Spatie permission]
  *   - null/absent  → No in-controller authorization (relies on route middleware)
+ *
+ * Tenant Isolation (ADR-003):
+ *   - resolveModel() now enforces tenant check instead of bypassing global scope
+ *   - Throws 404 if model belongs to different tenant (no data leakage)
  */
 trait Crudlfix
 {
@@ -34,17 +39,45 @@ trait Crudlfix
     }
 
     /**
-     * Resolve model from route parameter (bypasses global scopes).
+     * Resolve model from route parameter WITH tenant isolation.
+     *
+     * ADR-003: Models using BelongsToTenant trait have global scope.
+     * Instead of bypassing, we find within tenant scope.
+     * Returns 404 if model belongs to different tenant (no data leakage).
      */
     protected function resolveModel(string $param): Model
     {
         $cfg = $this->config();
         $id = request()->route($param);
-        return $cfg->model::withoutGlobalScopes()->findOrFail($id);
+
+        // Check if model uses BelongsToTenant trait
+        $usesTenantTrait = in_array(
+            \App\Models\Traits\BelongsToTenant::class,
+            class_uses_recursive($cfg->model)
+        );
+
+        if ($usesTenantTrait) {
+            // Find within tenant scope (global scope applies)
+            $model = $cfg->model::find($id);
+
+            if (!$model) {
+                // Model not found OR belongs to different tenant
+                // Return 404 to avoid data leakage (don't reveal existence)
+                abort(404, 'Data tidak ditemukan.');
+            }
+
+            return $model;
+        }
+
+        // Model doesn't use BelongsToTenant (e.g., Tenant itself, global models)
+        // Use standard findOrFail
+        return $cfg->model::findOrFail($id);
     }
 
     /**
      * Authorize an action. Supports policy mode and permission mode.
+     *
+     * ADR-006: Sets team context for Spatie Permission teams mode.
      */
     protected function authorizeCrudlfix(string $action, ?Model $model = null): void
     {
@@ -66,7 +99,13 @@ trait Crudlfix
                 abort(403, 'Tidak memiliki akses.');
             }
 
-            // Don't set team context — permissions are global, let Spatie resolve
+            // ADR-006: Set team context for Spatie Permission teams mode
+            $tenantCtx = app(TenantContext::class);
+            if ($tenantCtx->isInitialized()) {
+                // Set team_id for permission check
+                setPermissionsTeamId($tenantCtx->id);
+            }
+
             if (!$user->can($permission)) {
                 abort(403, 'Tidak memiliki akses.');
             }
