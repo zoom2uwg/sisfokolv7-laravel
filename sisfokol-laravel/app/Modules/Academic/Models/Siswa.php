@@ -19,6 +19,33 @@ class Siswa extends Model
 
     protected $table = 'siswa';
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            // Sync Indonesian to English
+            if (isset($model->nama)) $model->name = $model->nama;
+            if (isset($model->jenis_kelamin)) $model->gender = $model->jenis_kelamin;
+            if (isset($model->tempat_lahir)) $model->birth_place = $model->tempat_lahir;
+            if (isset($model->tanggal_lahir)) $model->birth_date = $model->tanggal_lahir;
+            if (isset($model->alamat)) $model->address = $model->alamat;
+            if (isset($model->telepon)) $model->phone = $model->telepon;
+            if (isset($model->foto)) $model->photo_path = $model->foto;
+            if (isset($model->qrcode)) $model->qrcode_path = $model->qrcode;
+
+            // Sync English to Indonesian
+            if (isset($model->name)) $model->nama = $model->name;
+            if (isset($model->gender)) $model->jenis_kelamin = $model->gender;
+            if (isset($model->birth_place)) $model->tempat_lahir = $model->birth_place;
+            if (isset($model->birth_date)) $model->tanggal_lahir = $model->birth_date;
+            if (isset($model->address)) $model->alamat = $model->address;
+            if (isset($model->phone)) $model->telepon = $model->phone;
+            if (isset($model->photo_path)) $model->foto = $model->photo_path;
+            if (isset($model->qrcode_path)) $model->qrcode = $model->qrcode_path;
+        });
+    }
+
     protected $fillable = [
         'nis', 'nisn', 'nama', 'jenis_kelamin', 'tempat_lahir', 'tanggal_lahir',
         'alamat', 'telepon', 'foto', 'agama', 'status', 'qrcode',

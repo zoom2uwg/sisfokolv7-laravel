@@ -20,6 +20,23 @@ class Mapel extends Model
 
     protected $table = 'mapel';
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            // Sync Indonesian to English
+            if (isset($model->kode)) $model->code = $model->kode;
+            if (isset($model->nama)) $model->name = $model->nama;
+            if (isset($model->mapel_jenis_id)) $model->subject_type_id = $model->mapel_jenis_id;
+
+            // Sync English to Indonesian
+            if (isset($model->code)) $model->kode = $model->code;
+            if (isset($model->name)) $model->nama = $model->name;
+            if (isset($model->subject_type_id)) $model->mapel_jenis_id = $model->subject_type_id;
+        });
+    }
+
     protected $fillable = [
         'kode', 'nama', 'mapel_jenis_id', 'kkm', 'kurikulum_id', 'jenjang',
     ];

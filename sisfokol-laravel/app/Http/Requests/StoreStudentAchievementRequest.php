@@ -14,8 +14,9 @@ class StoreStudentAchievementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
+            // [2026-06-25 | AI-Agent] Update students -> siswa
+            'student_id' => ['required', 'exists:siswa,id'],
             'achievement_type_id' => ['required', 'exists:achievement_types,id'],
             'title' => ['required', 'string', 'max:200'],
             'description' => ['nullable', 'string'],
@@ -35,3 +36,4 @@ class StoreStudentAchievementRequest extends FormRequest
         ];
     }
 }
+

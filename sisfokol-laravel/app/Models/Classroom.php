@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\{BelongsToTenant, TracksAuditColumns};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,24 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Classroom extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant, TracksAuditColumns;
+
+    protected $table = 'kelas';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            // Sync English to Indonesian
+            if (isset($model->name)) $model->nama = $model->name;
+            if (isset($model->capacity)) $model->kapasitas = $model->capacity;
+
+            // Sync Indonesian to English
+            if (isset($model->nama)) $model->name = $model->nama;
+            if (isset($model->kapasitas)) $model->capacity = $model->kapasitas;
+        });
+    }
 
     protected $fillable = [
         'academic_year_id',

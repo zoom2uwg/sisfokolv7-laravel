@@ -50,14 +50,16 @@ class RaporGeneratorTest extends TestCase
             'is_active' => true,
         ]);
 
-        $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::create([
-            'id' => $this->academicYear->id,
-            'tenant_id' => $this->tenant->id,
-            'nama' => '2026/2027',
-            'tanggal_mulai' => '2026-07-01',
-            'tanggal_selesai' => '2027-06-30',
-            'aktif' => true,
-        ]);
+        // [2026-06-25 | AI-Agent] Avoid duplicate/unique key violation on unified table, fetch existing mapped record.
+        // $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::create([
+        //     'id' => $this->academicYear->id,
+        //     'tenant_id' => $this->tenant->id,
+        //     'nama' => '2026/2027',
+        //     'tanggal_mulai' => '2026-07-01',
+        //     'tanggal_selesai' => '2027-06-30',
+        //     'aktif' => true,
+        // ]);
+        $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::find($this->academicYear->id);
 
         $this->semester = Semester::create([
             'tenant_id' => $this->tenant->id,
@@ -90,16 +92,23 @@ class RaporGeneratorTest extends TestCase
             'status' => 'aktif',
         ]);
 
-        $this->student = new Student([
+        // [2026-06-25 | AI-Agent] Avoid duplicate insert on unified table, fetch existing mapped record.
+        // $this->student = new Student([
+        //     'academic_year_id' => $this->academicYear->id,
+        //     'classroom_id' => $this->classroom->id,
+        //     'nis' => '2026002',
+        //     'name' => 'Siti Aminah',
+        //     'gender' => 'P',
+        //     'is_active' => true,
+        // ]);
+        // $this->student->id = $this->siswa->id;
+        // $this->student->save();
+        $this->student = Student::find($this->siswa->id);
+        $this->student->update([
             'academic_year_id' => $this->academicYear->id,
             'classroom_id' => $this->classroom->id,
-            'nis' => '2026002',
-            'name' => 'Siti Aminah',
-            'gender' => 'P',
             'is_active' => true,
         ]);
-        $this->student->id = $this->siswa->id;
-        $this->student->save();
     }
 
     /** @test */

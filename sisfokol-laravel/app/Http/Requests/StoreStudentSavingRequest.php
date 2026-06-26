@@ -14,7 +14,8 @@ class StoreStudentSavingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'student_id' => ['required', 'exists:students,id'],
+            // [2026-06-25 | AI-Agent] Update students -> siswa
+            'student_id' => ['required', 'exists:siswa,id'],
             'date' => ['required', 'date'],
             'is_debit' => ['required', 'boolean'],
             'amount' => ['required', 'numeric', 'min:0'],

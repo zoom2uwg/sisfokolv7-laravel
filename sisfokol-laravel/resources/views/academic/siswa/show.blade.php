@@ -54,13 +54,15 @@
                     </span>
                 </div>
 
-                <!-- Tempat, Tanggal Lahir -->
+                <!-- Tempat, Tanggal Lahir (Field ACL) -->
+                @field('siswa.tanggal_lahir')
                 <div>
                     <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Tempat, Tanggal Lahir</span>
                     <span class="text-sm font-medium text-slate-200 mt-1 block">
                         {{ $siswa->tempat_lahir ?? '-' }}, {{ $siswa->tanggal_lahir ? $siswa->tanggal_lahir->translatedFormat('d F Y') : '-' }}
                     </span>
                 </div>
+                @endfield
 
                 <!-- Agama -->
                 <div>
@@ -90,11 +92,13 @@
                     </div>
                 </div>
 
-                <!-- Alamat -->
+                <!-- Alamat (Field ACL) -->
+                @field('siswa.alamat')
                 <div class="sm:col-span-2">
                     <span class="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Alamat Lengkap</span>
                     <span class="text-sm font-medium text-slate-200 mt-1 block">{{ $siswa->alamat ?? '-' }}</span>
                 </div>
+                @endfield
             </div>
         </div>
     </div>

@@ -14,7 +14,7 @@ class StorePaymentItemRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
             'name' => ['required', 'string', 'max:200'],
             'code' => ['nullable', 'string', 'max:50'],
             'amount' => ['required', 'numeric', 'min:0'],
@@ -34,3 +34,4 @@ class StorePaymentItemRequest extends FormRequest
         ];
     }
 }
+

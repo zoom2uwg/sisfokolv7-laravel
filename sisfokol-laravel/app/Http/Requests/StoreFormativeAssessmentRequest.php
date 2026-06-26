@@ -14,9 +14,10 @@ class StoreFormativeAssessmentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
-            'subject_id' => ['required', 'exists:subjects,id'],
-            'classroom_id' => ['required', 'exists:classrooms,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
+            'subject_id' => ['required', 'exists:mapel,id'],
+            // [2026-06-25 | AI-Agent] Update classrooms -> kelas
+            'classroom_id' => ['required', 'exists:kelas,id'],
             'name' => ['required', 'string', 'max:200'],
             'assessment_date' => ['required', 'date'],
             'description' => ['nullable', 'string'],
@@ -33,3 +34,4 @@ class StoreFormativeAssessmentRequest extends FormRequest
         ];
     }
 }
+

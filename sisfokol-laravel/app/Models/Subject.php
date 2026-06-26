@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Traits\{BelongsToTenant, TracksAuditColumns};
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,26 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Subject extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, BelongsToTenant, TracksAuditColumns;
+
+    protected $table = 'mapel';
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            // Sync English to Indonesian
+            if (isset($model->code)) $model->kode = $model->code;
+            if (isset($model->name)) $model->nama = $model->name;
+            if (isset($model->subject_type_id)) $model->mapel_jenis_id = $model->subject_type_id;
+
+            // Sync Indonesian to English
+            if (isset($model->kode)) $model->code = $model->kode;
+            if (isset($model->nama)) $model->name = $model->nama;
+            if (isset($model->mapel_jenis_id)) $model->subject_type_id = $model->mapel_jenis_id;
+        });
+    }
 
     protected $fillable = [
         'academic_year_id',

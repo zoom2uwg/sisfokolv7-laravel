@@ -29,7 +29,7 @@ class CurriculumController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'subject_id' => 'required|exists:subjects,id', // subject_id maps to subjects table in core evaluation schema
+            'subject_id' => 'required|exists:mapel,id', // subject_id maps to subjects table in core evaluation schema
             'phase' => 'required|string|max:10',
             'code' => 'required|string|max:50',
             'description' => 'required|string',
@@ -44,3 +44,4 @@ class CurriculumController extends Controller
         return redirect()->route('evaluation.curriculum.index')->with('success', 'Kompetensi kurikulum berhasil ditambahkan.');
     }
 }
+

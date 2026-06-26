@@ -30,8 +30,9 @@ class StudentBillController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'academic_year_id' => 'required|exists:academic_years,id',
-            'student_id' => 'required|exists:students,id',
+            'academic_year_id' => 'required|exists:tahun_ajaran,id',
+            // [2026-06-25 | AI-Agent] Update students -> siswa
+            'student_id' => 'required|exists:siswa,id',
             'payment_item_id' => 'required|exists:payment_items,id',
             'period' => 'nullable|string|max:50',
             'amount' => 'required|numeric|min:0',
@@ -54,3 +55,4 @@ class StudentBillController extends Controller
         return redirect()->route('finance.student-bills.index')->with('success', 'Tagihan berhasil dihapus.');
     }
 }
+

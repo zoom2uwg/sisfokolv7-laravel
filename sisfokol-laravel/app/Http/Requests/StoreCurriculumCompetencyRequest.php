@@ -20,8 +20,8 @@ class StoreCurriculumCompetencyRequest extends FormRequest
         $phase = $this->input('phase');
 
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
-            'subject_id' => ['required', 'exists:subjects,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
+            'subject_id' => ['required', 'exists:mapel,id'],
             'phase' => ['required', 'string', 'max:20'],
             'code' => [
                 'required',
@@ -47,3 +47,4 @@ class StoreCurriculumCompetencyRequest extends FormRequest
         ];
     }
 }
+

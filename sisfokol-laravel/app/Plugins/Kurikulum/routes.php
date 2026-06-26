@@ -37,4 +37,9 @@ Route::middleware(['web', 'auth', 'plugin:kurikulum'])
             Route::put('/{komponen}',           [KomponenKompetensiController::class, 'update'])->name('update');
             Route::delete('/{komponen}',        [KomponenKompetensiController::class, 'destroy'])->name('destroy');
         });
+
+        // --- API Endpoints (CRUDLFIX cascade/search) ---
+        Route::get('/api',                      [KurikulumController::class, 'api'])->name('api');
+        Route::get('/struktur/api',             [StrukturKurikulumController::class, 'api'])->name('struktur.api');
+        Route::get('/komponen/api',             [KomponenKompetensiController::class, 'api'])->name('komponen.api');
     });

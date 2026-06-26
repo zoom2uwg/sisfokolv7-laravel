@@ -58,14 +58,16 @@ class GradeCalculatorTest extends TestCase
             'is_active' => true,
         ]);
 
-        $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::create([
-            'id' => $this->academicYear->id,
-            'tenant_id' => $this->tenant->id,
-            'nama' => '2026/2027',
-            'tanggal_mulai' => '2026-07-01',
-            'tanggal_selesai' => '2027-06-30',
-            'aktif' => true,
-        ]);
+        // [2026-06-25 | AI-Agent] Avoid duplicate/unique key violation on unified table, fetch existing mapped record.
+        // $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::create([
+        //     'id' => $this->academicYear->id,
+        //     'tenant_id' => $this->tenant->id,
+        //     'nama' => '2026/2027',
+        //     'tanggal_mulai' => '2026-07-01',
+        //     'tanggal_selesai' => '2027-06-30',
+        //     'aktif' => true,
+        // ]);
+        $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::find($this->academicYear->id);
 
         // 4. Create Semester (Ganjil)
         $this->semester = Semester::create([

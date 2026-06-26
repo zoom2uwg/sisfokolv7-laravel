@@ -21,6 +21,21 @@ class Kelas extends Model
 
     protected $table = 'kelas';
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($model) {
+            // Sync Indonesian to English
+            if (isset($model->nama)) $model->name = $model->nama;
+            if (isset($model->kapasitas)) $model->capacity = $model->kapasitas;
+
+            // Sync English to Indonesian
+            if (isset($model->name)) $model->nama = $model->name;
+            if (isset($model->capacity)) $model->kapasitas = $model->capacity;
+        });
+    }
+
     protected $fillable = [
         'branch_id', 'wali_kelas_id', 'nama', 'tingkat', 'kapasitas',
     ];

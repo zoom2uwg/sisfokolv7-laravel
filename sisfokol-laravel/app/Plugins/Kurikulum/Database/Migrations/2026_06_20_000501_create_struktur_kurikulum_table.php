@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->string('jenjang', 10);                // 'SD','SMP','SMA'
             $table->string('kelas', 10);                  // '7','8','9'
             $table->string('fase', 5)->nullable();        // 'A'-'F' for Kurmer
-            $table->enum('jenis_kegiatan', ['intrakurikuler', 'kokurikuler_p5'])->default('intrakurikuler');
+            $table->enum('jenis_kegiatan', ['intrakurikuler', 'kokurikuler', 'ekstrakurikuler'])->default('intrakurikuler');
             $table->timestamps();
             $table->unique(['tenant_id', 'kurikulum_id', 'jenjang', 'kelas', 'jenis_kegiatan'], 'uniq_struktur_kur');
         });

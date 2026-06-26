@@ -14,7 +14,7 @@ class StoreAttendanceTimeRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
             'type' => ['required', 'in:in,out'],
             'start_time' => ['required', 'date_format:H:i'],
             'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
@@ -32,3 +32,4 @@ class StoreAttendanceTimeRequest extends FormRequest
         ];
     }
 }
+

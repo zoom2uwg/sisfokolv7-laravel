@@ -18,12 +18,13 @@ class StoreClassroomRequest extends FormRequest
         $academicYearId = $this->input('academic_year_id');
 
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
             'name' => [
                 'required',
                 'string',
                 'max:50',
-                Rule::unique('classrooms')->where(fn ($query) => $query->where('academic_year_id', $academicYearId))->ignore($id),
+                // [2026-06-25 | AI-Agent] Update classrooms -> kelas
+                Rule::unique('kelas')->where(fn ($query) => $query->where('academic_year_id', $academicYearId))->ignore($id),
             ],
             'level' => ['required', 'string', 'max:20'],
             'major' => ['nullable', 'string', 'max:100'],
@@ -44,3 +45,4 @@ class StoreClassroomRequest extends FormRequest
         ];
     }
 }
+

@@ -14,8 +14,9 @@ class StoreStudentPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
+            // [2026-06-25 | AI-Agent] Update students -> siswa
+            'student_id' => ['required', 'exists:siswa,id'],
             'payment_date' => ['required', 'date'],
             'total' => ['required', 'numeric', 'min:0'],
             'payment_method' => ['required', 'in:cash,transfer'],
@@ -36,3 +37,4 @@ class StoreStudentPaymentRequest extends FormRequest
         ];
     }
 }
+

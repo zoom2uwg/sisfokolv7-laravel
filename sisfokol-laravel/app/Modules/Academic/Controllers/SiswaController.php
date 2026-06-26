@@ -4,81 +4,56 @@ namespace App\Modules\Academic\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Modules\Academic\Models\Siswa;
-use App\Modules\Academic\Requests\StoreSiswaRequest;
-use App\Modules\Academic\Requests\UpdateSiswaRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Gate;
+use App\Support\Crudlfix\Crudlfix;
+use Illuminate\Validation\Rule;
 
+/**
+ * SiswaController — refactored with CRUDLFIX.
+ * Uses policy-based authorization (SiswaPolicy).
+ */
 class SiswaController extends Controller
 {
-    public function index(Request $request)
+    use Crudlfix;
+
+    protected function crudlfix(): array
     {
-        Gate::authorize('viewAny', Siswa::class);
+        $tenantId = auth()->user()->tenant_id;
 
-        $search = $request->input('search');
-        $query = Siswa::query();
-
-        if ($search) {
-            $query->where(function ($q) use ($search) {
-                $q->where('nama', 'like', "%{$search}%")
-                  ->orWhere('nis', 'like', "%{$search}%")
-                  ->orWhere('nisn', 'like', "%{$search}%");
-            });
-        }
-
-        $siswa = $query->latest()->paginate(15)->withQueryString();
-
-        return view('academic.siswa.index', compact('siswa', 'search'));
-    }
-
-    public function create()
-    {
-        Gate::authorize('create', Siswa::class);
-        return view('academic.siswa.create');
-    }
-
-    public function store(StoreSiswaRequest $request)
-    {
-        Gate::authorize('create', Siswa::class);
-
-        $siswa = Siswa::create($request->validated());
-
-        return redirect()
-            ->route('academic.siswa.index')
-            ->with('success', "Data siswa {$siswa->nama} berhasil ditambahkan.");
-    }
-
-    public function show(Siswa $siswa)
-    {
-        Gate::authorize('view', $siswa);
-        return view('academic.siswa.show', compact('siswa'));
-    }
-
-    public function edit(Siswa $siswa)
-    {
-        Gate::authorize('update', $siswa);
-        return view('academic.siswa.edit', compact('siswa'));
-    }
-
-    public function update(UpdateSiswaRequest $request, Siswa $siswa)
-    {
-        Gate::authorize('update', $siswa);
-
-        $siswa->update($request->validated());
-
-        return redirect()
-            ->route('academic.siswa.index')
-            ->with('success', "Data siswa {$siswa->nama} berhasil diperbarui.");
-    }
-
-    public function destroy(Siswa $siswa)
-    {
-        Gate::authorize('delete', $siswa);
-
-        $siswa->delete();
-
-        return redirect()
-            ->route('academic.siswa.index')
-            ->with('success', "Data siswa {$siswa->nama} berhasil dihapus.");
+        return [
+            'model'     => Siswa::class,
+            'view'      => 'academic.siswa',
+            'route'     => 'academic.siswa',
+            'authorize' => 'siswa',
+            'authType'  => 'policy',
+            'search'    => ['nama', 'nis', 'nisn'],
+            'rules'     => [
+                'store' => [
+                    'nis'             => ['required', 'string', 'max:30', Rule::unique('siswa')->where('tenant_id', $tenantId)],
+                    'nisn'            => ['nullable', 'string', 'max:30', Rule::unique('siswa')->where('tenant_id', $tenantId)],
+                    'nama'            => ['required', 'string', 'max:100'],
+                    'jenis_kelamin'   => ['required', 'in:L,P'],
+                    'tempat_lahir'    => ['nullable', 'string', 'max:50'],
+                    'tanggal_lahir'   => ['nullable', 'date'],
+                    'alamat'          => ['nullable', 'string'],
+                    'telepon'         => ['nullable', 'string', 'max:20'],
+                    'agama'           => ['nullable', 'string', 'max:20'],
+                    'status'          => ['required', 'in:aktif,nonaktif,lulus,pindah,keluar'],
+                ],
+                'update' => [
+                    'nis'             => ['required', 'string', 'max:30'],
+                    'nisn'            => ['nullable', 'string', 'max:30'],
+                    'nama'            => ['required', 'string', 'max:100'],
+                    'jenis_kelamin'   => ['required', 'in:L,P'],
+                    'tempat_lahir'    => ['nullable', 'string', 'max:50'],
+                    'tanggal_lahir'   => ['nullable', 'date'],
+                    'alamat'          => ['nullable', 'string'],
+                    'telepon'         => ['nullable', 'string', 'max:20'],
+                    'agama'           => ['nullable', 'string', 'max:20'],
+                    'status'          => ['required', 'in:aktif,nonaktif,lulus,pindah,keluar'],
+                ],
+            ],
+            'perPage' => 15,
+            'varName' => 'siswa',  // View uses $siswa, not $siswas
+        ];
     }
 }

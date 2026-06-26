@@ -9,7 +9,7 @@ class GuruPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->can('employee.*') || $user->can('employee.view');
+        return $user->can('guru.view') || $user->can('employee.*') || $user->can('employee.view');
     }
 
     public function view(User $user, Guru $guru): bool

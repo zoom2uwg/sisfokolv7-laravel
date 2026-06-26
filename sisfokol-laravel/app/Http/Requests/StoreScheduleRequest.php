@@ -17,9 +17,10 @@ class StoreScheduleRequest extends FormRequest
         $id = $this->route('schedule')?->id;
 
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
-            'classroom_id' => ['required', 'exists:classrooms,id'],
-            'subject_id' => ['required', 'exists:subjects,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
+            // [2026-06-25 | AI-Agent] Update classrooms -> kelas
+            'classroom_id' => ['required', 'exists:kelas,id'],
+            'subject_id' => ['required', 'exists:mapel,id'],
             'employee_id' => ['required', 'exists:employees,id'],
             'room_id' => ['nullable', 'exists:rooms,id'],
             'day_id' => ['required', 'exists:days,id'],
@@ -42,3 +43,4 @@ class StoreScheduleRequest extends FormRequest
         ];
     }
 }
+

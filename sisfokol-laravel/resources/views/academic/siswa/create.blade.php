@@ -85,14 +85,16 @@
                     @enderror
                 </div>
 
-                <!-- Tanggal Lahir -->
+                <!-- Tanggal Lahir (Field ACL) -->
+                @field('siswa.tanggal_lahir')
                 <div>
                     <label for="tanggal_lahir" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Tanggal Lahir</label>
-                    <input type="date" name="tanggal_lahir" id="tanggal_lahir" value="{{ old('tanggal_lahir') }}" class="w-full px-4 py-2.5 bg-slate-950/50 border @error('tanggal_lahir') border-rose-500 @else border-slate-800 @enderror rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm">
+                    <input type="date" name="tanggal_lahir" id="tanggal_lahir" value="{{ old('tanggal_lahir') }}" @fieldAttr('siswa.tanggal_lahir') class="w-full px-4 py-2.5 bg-slate-950/50 border @error('tanggal_lahir') border-rose-500 @else border-slate-800 @enderror rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm disabled:opacity-50 disabled:cursor-not-allowed">
                     @error('tanggal_lahir')
                         <p class="text-xs text-rose-500 mt-1.5">{{ $message }}</p>
                     @enderror
                 </div>
+                @endfield
 
                 <!-- Telepon (Field ACL) -->
                 @field('siswa.telepon')
@@ -118,10 +120,11 @@
                     @enderror
                 </div>
 
-                <!-- Alamat -->
+                <!-- Alamat (Field ACL) -->
+                @field('siswa.alamat')
                 <div class="md:col-span-2">
                     <label for="alamat" class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Alamat Lengkap</label>
-                    <textarea name="alamat" id="alamat" rows="3" class="w-full px-4 py-2.5 bg-slate-950/50 border @error('alamat') border-rose-500 @else border-slate-800 @enderror rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm">{{ old('alamat') }}</textarea>
+                    <textarea name="alamat" id="alamat" rows="3" @fieldAttr('siswa.alamat') class="w-full px-4 py-2.5 bg-slate-950/50 border @error('alamat') border-rose-500 @else border-slate-800 @enderror rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition text-sm disabled:opacity-50 disabled:cursor-not-allowed">{{ old('alamat') }}</textarea>
                     @error('alamat')
                         <p class="text-xs text-rose-500 mt-1.5">{{ $message }}</p>
                     @enderror

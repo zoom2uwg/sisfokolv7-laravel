@@ -18,7 +18,8 @@ class StoreSubjectRequest extends FormRequest
         $academicYearId = $this->input('academic_year_id');
 
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
+            // [2026-06-25 | AI-Agent] Disable academic_year_id rule for global table 'subjects'.
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
             'subject_type_id' => ['nullable', 'exists:subject_types,id'],
             'code' => [
                 'required',
@@ -42,3 +43,4 @@ class StoreSubjectRequest extends FormRequest
         ];
     }
 }
+

@@ -90,7 +90,7 @@
                             @php
                                 $kegColor = match($str->jenis_kegiatan) {
                                     'intrakurikuler' => 'bg-emerald-500/10 border-emerald-500/25 text-emerald-300',
-                                    'kokurikuler' => 'bg-sky-500/10 border-sky-500/25 text-sky-300',
+                                    'kokurikuler_p5' => 'bg-sky-500/10 border-sky-500/25 text-sky-300',
                                     'ekstrakurikuler' => 'bg-pink-500/10 border-pink-500/25 text-pink-300',
                                     default => 'bg-slate-700/40 border-slate-600/40 text-slate-300',
                                 };

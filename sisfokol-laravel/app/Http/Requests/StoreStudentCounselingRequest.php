@@ -14,8 +14,9 @@ class StoreStudentCounselingRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'academic_year_id' => ['required', 'exists:tahun_ajaran,id'],
+            // [2026-06-25 | AI-Agent] Update students -> siswa
+            'student_id' => ['required', 'exists:siswa,id'],
             'counseling_type_id' => ['required', 'exists:counseling_types,id'],
             'counselor_teacher_id' => ['required', 'exists:counselor_teachers,id'],
             'date' => ['required', 'date'],
@@ -34,3 +35,4 @@ class StoreStudentCounselingRequest extends FormRequest
         ];
     }
 }
+

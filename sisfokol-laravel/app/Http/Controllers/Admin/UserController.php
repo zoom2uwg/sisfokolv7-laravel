@@ -5,67 +5,58 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
+use App\Support\Crudlfix\Crudlfix;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
-    public function index()
-    {
-        $users = User::with('roles')->latest()->paginate(20);
+    use Crudlfix;
 
-        return view('admin.users.index', compact('users'));
+    protected function crudlfix(): array
+    {
+        return [
+            'model'        => User::class,
+            'view'         => 'admin.users',
+            'route'        => 'admin.users',
+            'requestClass' => StoreUserRequest::class,
+            'search'       => ['username', 'nama', 'email'],
+            'with'         => ['roles'],
+            'perPage'      => 20,
+            'viewData'     => [
+                'roles' => Role::all(),
+            ],
+        ];
     }
 
-    public function create()
+    protected function beforeStore(array $validated, Request $request): array
     {
-        $roles = Role::all();
-
-        return view('admin.users.create', compact('roles'));
+        $validated['password'] = Hash::make($validated['password']);
+        return $validated;
     }
 
-    public function store(StoreUserRequest $request)
+    protected function afterStore($model, Request $request): void
     {
-        $data = $request->validated();
-        $data['password'] = Hash::make($data['password']);
-
-        $user = User::create($data);
-        $user->assignRole($data['role']);
-
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Pengguna berhasil ditambahkan.');
-    }
-
-    public function edit(User $user)
-    {
-        $roles = Role::all();
-
-        return view('admin.users.edit', compact('user', 'roles'));
-    }
-
-    public function update(StoreUserRequest $request, User $user)
-    {
-        $data = $request->validated();
-
-        if (! empty($data['password'])) {
-            $data['password'] = Hash::make($data['password']);
-        } else {
-            unset($data['password']);
+        if (!empty($request->input('role'))) {
+            $model->assignRole($request->input('role'));
         }
-
-        $user->update($data);
-        $user->syncRoles($data['role']);
-
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Pengguna berhasil diperbarui.');
     }
 
-    public function destroy(User $user)
+    protected function beforeUpdate(array $validated, $model, Request $request): array
     {
-        $user->delete();
+        if (!empty($validated['password'])) {
+            $validated['password'] = Hash::make($validated['password']);
+        } else {
+            unset($validated['password']);
+        }
+        return $validated;
+    }
 
-        return redirect()->route('admin.users.index')
-            ->with('success', 'Pengguna berhasil dihapus.');
+    protected function afterUpdate($model, Request $request): void
+    {
+        if ($request->has('role')) {
+            $model->syncRoles($request->input('role'));
+        }
     }
 }

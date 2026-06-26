@@ -40,14 +40,8 @@ class DemoSeeder extends Seeder
             'is_active' => true,
         ]);
 
-        $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::create([
-            'id' => $academicYear->id,
-            'tenant_id' => $tenant->id,
-            'nama' => '2026/2027',
-            'tanggal_mulai' => '2026-07-01',
-            'tanggal_selesai' => '2027-06-30',
-            'aktif' => true,
-        ]);
+        // Since they use the same table (tahun_ajaran), retrieve the mapped model instance.
+        $tahunAjaran = \App\Modules\Academic\Models\TahunAjaran::find($academicYear->id);
 
         $semester = \App\Modules\Academic\Models\Semester::create([
             'tenant_id' => $tenant->id,
@@ -82,12 +76,17 @@ class DemoSeeder extends Seeder
             'capacity' => 36,
         ]);
 
-        $kelas = \App\Modules\Academic\Models\Kelas::create([
-            'id' => $classroom->id,
-            'tenant_id' => $tenant->id,
-            'nama' => 'Kelas X-A',
+        // [2026-06-25 | AI-Agent] Avoid duplicate primary key insert, retrieve and update the mapped model instance.
+        // $kelas = \App\Modules\Academic\Models\Kelas::create([
+        //     'id' => $classroom->id,
+        //     'tenant_id' => $tenant->id,
+        //     'nama' => 'Kelas X-A',
+        //     'tingkat' => 10,
+        //     'kapasitas' => 36,
+        // ]);
+        $kelas = \App\Modules\Academic\Models\Kelas::find($classroom->id);
+        $kelas->update([
             'tingkat' => 10,
-            'kapasitas' => 36,
         ]);
 
         // ─── 2. Users per Role ─────────────────────────────────────────────
@@ -229,14 +228,20 @@ class DemoSeeder extends Seeder
                 'status'       => 'aktif',
             ]);
 
-            // Create global Student record
-            $student = \App\Models\Student::create([
-                'id' => $siswa->id,
+            // [2026-06-25 | AI-Agent] Avoid duplicate primary key insert, retrieve and update the mapped model instance.
+            // $student = \App\Models\Student::create([
+            //     'id' => $siswa->id,
+            //     'academic_year_id' => $academicYear->id,
+            //     'classroom_id' => $classroom->id,
+            //     'nis' => $s['nis'],
+            //     'name' => $s['nama'],
+            //     'gender' => $s['jk'],
+            //     'is_active' => true,
+            // ]);
+            $student = \App\Models\Student::find($siswa->id);
+            $student->update([
                 'academic_year_id' => $academicYear->id,
                 'classroom_id' => $classroom->id,
-                'nis' => $s['nis'],
-                'name' => $s['nama'],
-                'gender' => $s['jk'],
                 'is_active' => true,
             ]);
 

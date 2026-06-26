@@ -56,8 +56,9 @@ class GradeEntryController extends Controller
     public function form(Request $request)
     {
         $request->validate([
-            'classroom_id' => 'required|exists:classrooms,id',
-            'subject_id' => 'required|exists:subjects,id',
+            // [2026-06-25 | AI-Agent] Update classrooms -> kelas
+            'classroom_id' => 'required|exists:kelas,id',
+            'subject_id' => 'required|exists:mapel,id',
         ]);
 
         $classroomId = $request->input('classroom_id');
@@ -152,8 +153,9 @@ class GradeEntryController extends Controller
     public function storeAssessment(Request $request)
     {
         $validated = $request->validate([
-            'classroom_id' => 'required|exists:classrooms,id',
-            'subject_id' => 'required|exists:subjects,id',
+            // [2026-06-25 | AI-Agent] Update classrooms -> kelas
+            'classroom_id' => 'required|exists:kelas,id',
+            'subject_id' => 'required|exists:mapel,id',
             'type' => 'required|in:formative,summative',
             'name' => 'required|string|max:255',
             'assessment_date' => 'required|date',
@@ -235,3 +237,4 @@ class GradeEntryController extends Controller
         ]);
     }
 }
+
