@@ -245,3 +245,31 @@ $response->assertStatus(200);  // Harus bisa akses
 | 2026-06-25 | Fix `resolveModel()` untuk tenant isolation |
 | 2026-06-25 | Fix `authorizeCrudlfix()` untuk team context |
 | 2026-06-25 | Backup lama disimpan di `backups/php/Support/Crudlfix/Crudlfix.php.bak_20260625` |
+| 2026-06-25 | Update test tenant isolation dari 403 → 404 (lebih aman, tidak membocorkan keberadaan data) |
+| 2026-06-25 | Backup test lama di `backups/php/tests/Feature/Crudlfix/CrudlfixRbacTest.php.bak_20260625` |
+| 2026-06-25 | Semua 20 test CrudlfixRbacTest PASSED |
+
+## Keputusan Desain: 404 vs 403 untuk Tenant Isolation
+
+### Kenapa 404 Lebih Baik dari 403?
+
+| Aspek | 403 Forbidden | 404 Not Found |
+|-------|---------------|---------------|
+| **Pesan ke user** | "Data ada tapi kamu tidak boleh akses" | "Data tidak ditemukan" |
+| **Kebocoran informasi** | ⚠️ Mengungkap bahwa data milik tenant lain ada | ✅ Tidak mengungkap keberadaan data |
+| **Keamanan** | Kurang aman (attacker tahu data ada) | Lebih aman (attacker tidak tahu data ada) |
+| **User experience** | Bingung ("kenapa forbidden?") | Jelas ("data tidak ada") |
+
+### Contoh Serangan
+
+**Dengan 403:**
+1. Attacker dari Tenant A coba akses `/academic/siswa/1` → 403
+2. Attacker coba `/academic/siswa/2` → 403
+3. Attacker coba `/academic/siswa/100` → 404
+4. Attacker tahu: siswa ID 1-99 ada di tenant lain
+
+**Dengan 404:**
+1. Attacker dari Tenant A coba akses `/academic/siswa/1` → 404
+2. Attacker coba `/academic/siswa/2` → 404
+3. Attacker coba `/academic/siswa/100` → 404
+4. Attacker tidak tahu apakah data ada atau tidak

@@ -92,7 +92,7 @@
                             class="w-full px-4 py-2.5 bg-slate-800/70 border {{ $errors->has('jenis_kegiatan') ? 'border-red-500/70' : 'border-slate-600/50' }} rounded-xl text-slate-200 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all duration-150 text-sm">
                         <option value="">-- Pilih --</option>
                         <option value="intrakurikuler" {{ old('jenis_kegiatan') == 'intrakurikuler' ? 'selected' : '' }}>Intrakurikuler</option>
-                        <option value="kokurikuler" {{ old('jenis_kegiatan') == 'kokurikuler' ? 'selected' : '' }}>Kokurikuler (P5)</option>
+                        <option value="kokurikuler_p5" {{ old('jenis_kegiatan') == 'kokurikuler_p5' ? 'selected' : '' }}>Kokurikuler (P5)</option>
                         <option value="ekstrakurikuler" {{ old('jenis_kegiatan') == 'ekstrakurikuler' ? 'selected' : '' }}>Ekstrakurikuler</option>
                     </select>
                     @error('jenis_kegiatan') <p class="text-red-400 text-xs">{{ $message }}</p> @enderror

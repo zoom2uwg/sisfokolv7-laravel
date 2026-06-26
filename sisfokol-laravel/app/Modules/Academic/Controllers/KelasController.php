@@ -5,7 +5,7 @@ namespace App\Modules\Academic\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Academic\Models\Kelas;
 use App\Modules\Academic\Models\Guru;
-use App\Modules\Academic\Models\Branch;
+use App\Modules\Tenancy\Models\Branch;
 use App\Support\Crudlfix\Crudlfix;
 
 class KelasController extends Controller
