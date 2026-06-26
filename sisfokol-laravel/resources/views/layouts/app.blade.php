@@ -29,9 +29,6 @@
         }
     </script>
     
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
     @stack('styles')
     <style>
         [x-cloak] { display: none !important; }
@@ -145,6 +142,7 @@
             transition: background-color 0.2s ease;
         }
     </style>
+    @livewireStyles
 </head>
 <body class="h-full text-slate-100 antialiased" x-data="{ sidebarOpen: false }">
 
@@ -288,5 +286,6 @@
     </div>
 
     @stack('scripts')
+    @livewireScripts
 </body>
 </html>
