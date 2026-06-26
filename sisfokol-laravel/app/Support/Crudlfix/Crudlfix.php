@@ -39,6 +39,14 @@ trait Crudlfix
     }
 
     /**
+     * Get CrudlfixConfig instance for Livewire components.
+     */
+    public function getCrudlfixConfig(): CrudlfixConfig
+    {
+        return $this->config();
+    }
+
+    /**
      * Resolve model from route parameter WITH tenant isolation.
      *
      * ADR-003: Models using BelongsToTenant trait have global scope.
