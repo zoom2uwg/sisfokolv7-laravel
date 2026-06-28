@@ -1,10 +1,19 @@
 # DEV_DOCS-070: Dev Report — Status Real EPIC 7, 8, 9 (Verifikasi 2026-06-28)
 
+> ⚠️ **DISCLAIMER (ditambahkan 2026-06-28 sesi koreksi):**
+> Dokumen ini menyatakan "status real" tetapi **tidak benar-benar run test** — saat sesi ini MySQL mati, sehingga semua klaim "belum bisa verifikasi" sebenarnya berarti "tidak diverifikasi sama sekali". Dokumen ini berbasis baca file + konfigurasi, bukan eksekusi test.
+>
+> Verifikasi nyata (dengan MySQL aktif, command output sebagai bukti) ada di `DEV_DOCS/076_rekap_verifikasi_nyata_epic_1_9_20260628.md`. Hasil sebenarnya: EPIC 7/8/9 **semua PASS** (14/11/9). Dokumen `072_review_jujur` (sesi paralel) sudah mengoreksi klaim dokumen ini.
+>
+> **Sumber kebenaran:** `076`. Dokumen ini dipertahankan untuk transparansi riwayat.
+
+---
+
 - **Tanggal:** 2026-06-28
 - **Penulis:** ZCode Agent
 - **Proyek:** SISFOKOL v7 → Laravel 11 (`sisfokol-laravel/`)
 - **Tujuan:** Mencatat status real (ground truth) EPIC 7 (Finance), 8 (Presence), 9 (Kurikulum) per tanggal ini, sebagai dasar plan report eksekusi penyelesaian.
-- **Metode:** Pemeriksaan file fisik + konfigurasi + test files + percobaan eksekusi test suite.
+- **Metode:** Pemeriksaan file fisik + konfigurasi + test files + percobaan eksekusi test suite. *(Catatan: test suite tidak berhasil dijalankan sesi ini — MySQL mati. Verifikasi nyata ada di 076.)*
 
 ---
 

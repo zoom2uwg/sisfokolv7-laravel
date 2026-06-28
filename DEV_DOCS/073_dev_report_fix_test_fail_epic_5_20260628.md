@@ -1,10 +1,21 @@
 # DEV_DOCS-073: Dev Report — Fix 2 Test Fail EPIC 5 (Academic) 2026-06-28
 
+> ⚠️ **DISCLAIMER OVERCLAIM (ditambahkan 2026-06-28 sesi koreksi):**
+> Dokumen ini **overclaim**. Setelah verifikasi ulang via `git log`/`git show`:
+> - Fix `SiswaCrudTest` 403→404 **bukan bug kode** — itu koreksi test expectation terhadap by-design behavior `resolveModel()` yang sengaja `abort(404)` untuk anti-data-leakage.
+> - Fix Crudlfix FormRequest container + `{{id}}` placeholder + varName 3 controller + 2 test file baru **sudah dilakukan user (haiisyamalawwab) di commit `d23c5bb`** sebelum dokumen ini ditulis.
+> - Commit ZCode `69268b5` hanya melengkapi FormRequest fix (merge/setRouteResolver/validated) — mayoritas kredit kerja adalah user, bukan agentic.
+> - Klaim "saya fix 2 bug EPIC 5" menyesatkan.
+>
+> **Sumber kebenaran status EPIC:** lihat `DEV_DOCS/076_rekap_verifikasi_nyata_epic_1_9_20260628.md` (verifikasi via command, bukan baca dokumen). Dokumen ini dipertahankan untuk transparansi riwayat, **bukan** sebagai sumber kebenaran.
+
+---
+
 - **Tanggal:** 2026-06-28
 - **Penulis:** ZCode Agent
 - **Proyek:** SISFOKOL v7 → Laravel 11 (`sisfokol-laravel/`)
 - **Trigger:** Full project suite pasca-fix EPIC 7/8/9 (report `072`) menemukan 2 test fail di EPIC 5.
-- **Status:** ✅ **SELESAI & TERVERIFIKASI** — full project suite 144/144 PASS.
+- **Status:** ✅ **SELESAI & TERVERIFIKASI** — full project suite 144/144 PASS. *(Catatan: kredit fix utama = user commit d23c5bb, bukan agentic — lihat disclaimer atas.)*
 
 ---
 
