@@ -93,6 +93,13 @@ class RolePermissionSeeder extends Seeder
             'presensi.view',
             'absensi.view',
             'raport.view',
+
+            // Waka — kurikulum plugin permissions (idempotent dengan app/Plugins/Kurikulum/permissions.php)
+            'kurikulum.view',
+            'kurikulum.manage',
+
+            // Waka — view-only tabungan (fix gap TabunganPolicy, lihat Task 3)
+            'finance.student-saving.view',
         ];
 
         foreach ($permissions as $permission) {
@@ -198,6 +205,63 @@ class RolePermissionSeeder extends Seeder
             ],
             'inventory' => [
                 'inventory.*',
+            ],
+            'waka-kurikulum' => [
+                // Manage: Kurikulum & Akademik
+                'kurikulum.manage', 'kurikulum.view',
+                'master.subject.*', 'master.subject-type.*', 'mapel.view',
+                'master.classroom.*', 'kelas.view',
+                'master.academic-year.*',
+                'master.room.*',
+                'master.extracurricular.*',
+                'academic.schedule.*', 'jadwal.view',
+                'academic.curriculum.*', 'academic.teacher-agenda.*',
+                // View: bidang lain
+                'student.view', 'siswa.view',
+                'employee.view', 'guru.view',
+                'presence.view', 'presensi.view',
+                'absence.view', 'absensi.view',
+                'finance.student-bill.view', 'tagihan.view',
+                'finance.student-payment.view', 'pembayaran.view',
+                'finance.student-saving.view', 'tabungan.view',
+                'raport.view',
+                'dashboard.view', 'report.*', 'master.school-profile.view',
+            ],
+            'waka-kesiswaan' => [
+                // Manage: Kesiswaan, Organisasi
+                'student.*', 'siswa.view',
+                'violation.*', 'master.violation-type.*', 'master.violation-point.*',
+                'counseling.*', 'master.counseling-type.*',
+                'achievement.*', 'master.achievement-type.*',
+                'permit.*',
+                'absence.*', 'absensi.view',
+                'master.extracurricular.*',
+                // View: bidang lain
+                'kurikulum.view',
+                'employee.view', 'guru.view', 'kelas.view', 'mapel.view',
+                'academic.schedule.view', 'jadwal.view',
+                'presence.view', 'presensi.view',
+                'finance.student-bill.view', 'tagihan.view',
+                'finance.student-payment.view', 'pembayaran.view',
+                'finance.student-saving.view', 'tabungan.view',
+                'raport.view',
+                'dashboard.view', 'report.*', 'master.school-profile.view',
+            ],
+            'waka-sarpras' => [
+                // Manage: Sarana Prasarana
+                'inventory.*',
+                'master.room.*',
+                'master.school-profile.update', 'master.school-profile.view',
+                // View: bidang lain
+                'student.view', 'siswa.view', 'employee.view', 'guru.view',
+                'kelas.view', 'mapel.view',
+                'academic.schedule.view', 'jadwal.view',
+                'presence.view', 'presensi.view', 'absence.view', 'absensi.view',
+                'finance.student-bill.view', 'tagihan.view',
+                'finance.student-payment.view', 'pembayaran.view',
+                'finance.student-saving.view', 'tabungan.view',
+                'raport.view', 'kurikulum.view',
+                'dashboard.view', 'report.*',
             ],
         ];
 

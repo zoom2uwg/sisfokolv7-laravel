@@ -132,6 +132,27 @@ class DemoSeeder extends Seeder
                 'tipe'     => 'pegawai',
                 'role'     => 'homeroom-teacher',
             ],
+            [
+                'username' => 'waka.kurikulum.demo',
+                'nama'     => 'Waka Kurikulum Demo',
+                'email'    => 'wakakurikulum@smademo.sch.id',
+                'tipe'     => 'pegawai',
+                'role'     => 'waka-kurikulum',
+            ],
+            [
+                'username' => 'waka.kesiswaan.demo',
+                'nama'     => 'Waka Kesiswaan Demo',
+                'email'    => 'wakakesiswaan@smademo.sch.id',
+                'tipe'     => 'pegawai',
+                'role'     => 'waka-kesiswaan',
+            ],
+            [
+                'username' => 'waka.sarpras.demo',
+                'nama'     => 'Waka Sarpras Demo',
+                'email'    => 'wakasarpras@smademo.sch.id',
+                'tipe'     => 'pegawai',
+                'role'     => 'waka-sarpras',
+            ],
         ];
 
         $createdUsers = [];
