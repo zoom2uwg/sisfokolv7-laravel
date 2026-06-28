@@ -11,14 +11,14 @@ class MenuSeeder extends Seeder
     {
         $menus = [
             ['kode' => 'dashboard',        'label' => 'Dashboard',         'route' => 'dashboard',         'urutan' => 1,   'group' => 'Utama',       'permission_required' => 'dashboard.view',     'is_system' => true,  'icon' => 'fas fa-home'],
-            // Tenancy (super admin)
-            ['kode' => 'tenancy.tenants',  'label' => 'Tenants',           'route' => 'tenants.index',     'urutan' => 10,  'group' => 'Platform',    'permission_required' => 'tenant.view',        'is_system' => true,  'icon' => 'fas fa-building'],
-            ['kode' => 'tenancy.branches', 'label' => 'Branches',          'route' => 'branches.index',    'urutan' => 11,  'group' => 'Platform',    'permission_required' => 'tenant.view',        'is_system' => true,  'icon' => 'fas fa-sitemap'],
+            // Tenancy (super admin) — menu level platform, hanya SuperAdmin (tenant_id = null)
+            ['kode' => 'tenancy.tenants',  'label' => 'Tenants',           'route' => 'tenants.index',     'urutan' => 10,  'group' => 'Platform',    'permission_required' => 'tenant.view',        'is_system' => true,  'is_platform' => true, 'icon' => 'fas fa-building'],
+            ['kode' => 'tenancy.branches', 'label' => 'Branches',          'route' => 'branches.index',    'urutan' => 11,  'group' => 'Platform',    'permission_required' => 'tenant.view',        'is_system' => true,  'is_platform' => true, 'icon' => 'fas fa-sitemap'],
             // Auth
             ['kode' => 'auth.users',       'label' => 'Pengguna',          'route' => 'rbac.users',        'urutan' => 20,  'group' => 'Manajemen',   'permission_required' => 'user.manage',        'is_system' => true,  'icon' => 'fas fa-users'],
-            ['kode' => 'auth.rbac',        'label' => 'RBAC Builder',      'route' => 'rbac.index',        'urutan' => 21,  'group' => 'Manajemen',   'permission_required' => 'rbac.manage',        'is_system' => true,  'icon' => 'fas fa-shield-alt'],
-            ['kode' => 'auth.audit',       'label' => 'Audit Log',         'route' => 'audit.index',       'urutan' => 22,  'group' => 'Manajemen',   'permission_required' => 'audit.view',         'is_system' => true,  'icon' => 'fas fa-history'],
-            ['kode' => 'auth.plugins',     'label' => 'Plugin',            'route' => 'plugins.index',     'urutan' => 23,  'group' => 'Manajemen',   'permission_required' => 'plugin.activate',    'is_system' => true,  'icon' => 'fas fa-puzzle-piece'],
+            ['kode' => 'auth.rbac',        'label' => 'RBAC Builder',      'route' => 'rbac.index',        'urutan' => 21,  'group' => 'Manajemen',   'permission_required' => 'rbac.manage',        'is_system' => true,  'is_platform' => true, 'icon' => 'fas fa-shield-alt'],
+            ['kode' => 'auth.audit',       'label' => 'Audit Log',         'route' => 'audit.index',       'urutan' => 22,  'group' => 'Manajemen',   'permission_required' => 'audit.view',         'is_system' => true,  'is_platform' => true, 'icon' => 'fas fa-history'],
+            ['kode' => 'auth.plugins',     'label' => 'Plugin',            'route' => 'plugins.index',     'urutan' => 23,  'group' => 'Manajemen',   'permission_required' => 'plugin.activate',    'is_system' => true,  'is_platform' => true, 'icon' => 'fas fa-puzzle-piece'],
             // Academic (Epic 5)
             ['kode' => 'academic.siswa',   'label' => 'Siswa',             'route' => 'academic.siswa.index',       'urutan' => 30,  'group' => 'Akademik',    'permission_required' => 'siswa.view',         'is_system' => true,  'icon' => 'fas fa-user-graduate'],
             ['kode' => 'academic.guru',    'label' => 'Guru',              'route' => 'academic.guru.index',        'urutan' => 31,  'group' => 'Akademik',    'permission_required' => 'guru.view',          'is_system' => true,  'icon' => 'fas fa-user-tie'],

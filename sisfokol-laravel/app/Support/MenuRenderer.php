@@ -22,9 +22,15 @@ class MenuRenderer
         return Cache::remember("menu.{$user->id}." . ($user->tenant_id ?? 'global'), 60, function () use ($user) {
             $query = Menu::where('aktif', true)->orderBy('urutan');
             if (! $user->isSuperAdmin()) {
-                $query->where(function ($q) use ($user) {
-                    $q->whereNull('tenant_id')->orWhere('tenant_id', $user->tenant_id);
-                });
+                // ADR-010 / ADR-003: menu level platform (SuperAdmin-only) disembunyikan
+                // dari user tenant, sekalipun role-nya memegang wildcard permission '*'.
+                // Mencegah kebocoran visual menu global platform (Tenants, Branches,
+                // RBAC Builder, Audit Log, Plugin) ke Tenant Admin. Database-driven via
+                // flag is_platform — bukan hardcode nama permission.
+                $query->where('is_platform', false)
+                      ->where(function ($q) use ($user) {
+                          $q->whereNull('tenant_id')->orWhere('tenant_id', $user->tenant_id);
+                      });
             }
             $menus = $query->get();
 
@@ -32,13 +38,6 @@ class MenuRenderer
             if (! $user->isSuperAdmin()) {
                 $menus = $menus->filter(function ($m) use ($user) {
                     if (! $m->permission_required) return true;
-                    
-                    // [2026-06-28 | Antigravity] Exclude global platform-only permissions for tenant users
-                    $globalPermissions = ['tenant.view', 'plugin.activate', 'rbac.manage', 'audit.view'];
-                    if (in_array($m->permission_required, $globalPermissions)) {
-                        return false;
-                    }
-                    
                     return $user->can($m->permission_required);
                 });
             }

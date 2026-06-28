@@ -20,7 +20,7 @@ Pengujian dilakukan dengan masuk sebagai masing-masing dari 8 role pengguna, men
 | :--- | :--- | :--- | :--- | :---: | :--- |
 | **1** | `superadmin` | `super_admin` | Dashboard, Tenants, Branches, Pengguna, RBAC Builder, Audit Log, Plugin | **COMPLIANT** | Berfungsi sebagai Super Admin global (tanpa tenant). |
 | **2** | `admin` | `admin` | Dashboard, Tenants, Branches, Pengguna, RBAC Builder, Audit Log, Plugin | **COMPLIANT** | Berfungsi sebagai Global Admin Sekolah (tenant_id = null). |
-| **3** | `admin.sekolah` | `admin` | Dashboard, **Tenants (#)**, **Branches (#)**, Pengguna, **RBAC Builder**, **Audit Log**, **Plugin**, Siswa, Guru | <span style="color:red">**NON-COMPLIANT**</span> | **BOCOR (Leak):** Menampilkan menu global platform (`Tenants`, `Branches`, `RBAC Builder`, `Audit Log`, `Plugin`). Meskipun menu Tenants/Branches mengarah ke `#` karena rutenya tidak terdaftar di web, ini tetap merupakan kebocoran visual. |
+| **3** | `admin.sekolah` | `admin` | Dashboard, **Tenants (#)**, **Branches (#)**, Pengguna, **RBAC Builder**, **Audit Log**, **Plugin**, Siswa, Guru | <span style="color:red">**NON-COMPLIANT**</span> | **BOCOR (Leak):** Menampilkan menu global platform (`Tenants`, `Branches`, `RBAC Builder`, `Audit Log`, `Plugin`). Meskipun menu Tenants/Branches mengarah ke `#` karena rutenya tidak terdaftar di web, ini tetap merupakan kebocoran visual. **[FIXED 2026-06-28]** — lihat §6. Menu yang diharapkan setelah perbaikan: Dashboard, Pengguna, Siswa, Guru (menu platform disembunyikan via flag `is_platform`). |
 | **4** | `piket.demo` | `picket-officer` | Dashboard, Presensi, Absensi | **COMPLIANT** | Sesuai porsi kerja. Hanya menampilkan menu presensi & absensi. |
 | **5** | `bk.demo` | `counselor` | Dashboard, Siswa, Presensi, Absensi | **COMPLIANT** | Hanya menampilkan menu siswa & absensi. |
 | **6** | `guru.demo` | `teacher` | Dashboard, Siswa, Guru, Kelas, Mapel, Jadwal, Presensi | **COMPLIANT** | Hanya menampilkan menu akademik sekolah & presensi. |
@@ -90,3 +90,25 @@ Semua bukti screenshot baru tersimpan di folder [DEV_DOCS/assets/](file:///d:/la
 * **Guru Mapel:** `assets/076_guru_dashboard.png`
 * **Wali Kelas:** `assets/076_walikelas_dashboard.png`
 * **Siswa:** `assets/076_siswa_dashboard.png`
+
+---
+
+## 6. Perbaikan (2026-06-28)
+
+Kebocoran menu `admin.sekolah` telah diperbaiki dengan menerapkan **Rekomendasi #2** (penandaan eksplisit menu level platform), yang berakar pada prinsip database-driven ADR-010:
+
+1. **Migrasi baru** `app/Modules/Auth/Database/Migrations/2026_06_28_000000_add_is_platform_to_menus_table.php`
+   menambah kolom boolean `is_platform` pada tabel `menus` dan backfill idempoten untuk 5 menu platform global:
+   `tenancy.tenants`, `tenancy.branches`, `auth.rbac`, `auth.audit`, `auth.plugins`.
+
+2. **`MenuSeeder.php`** menandai kelima menu tersebut dengan `is_platform => true` (seeding segar).
+
+3. **`app/Support/MenuRenderer.php`** mengecualikan menu `is_platform = true` pada query untuk user non-SuperAdmin
+   (`tenant_id !== null`) — *sebelum* filter permission berjalan, sehingga wildcard `*` pada role `admin` tidak
+   lagi membuka jalan ke menu platform. Mempertahankan rule SuperAdmin → semua menu (`test_superadmin_still_sees_platform_menus`).
+
+4. **Test regressi** `tests/Feature/Rbac/MenuRendererTest.php`:
+   - `test_tenant_admin_with_wildcard_does_not_see_platform_menus` — mereproduksi skenario `admin.sekolah` (role `admin`, wildcard `*`) dan memastikan kelima menu platform tidak tampil, sementara menu tenant (Dashboard, Siswa, Guru) tetap tampil.
+   - `test_superadmin_still_sees_platform_menus` — memastikan SuperAdmin tetap melihat menu platform (no regression).
+
+**Hasil verifikasi:** `php artisan test --filter="Rbac"` → 33 passed (60 assertions), 0 failure.
