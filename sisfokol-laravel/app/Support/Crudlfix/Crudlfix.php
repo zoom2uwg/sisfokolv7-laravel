@@ -338,7 +338,8 @@ trait Crudlfix
         $cfg = $this->config();
 
         if ($cfg->requestClass) {
-            $formRequest = new $cfg->requestClass();
+            $formRequest = app($cfg->requestClass);
+            $formRequest->setContainer(app())->setRedirector(app('redirect'));
             return $formRequest->validateResolved($request);
         }
 
@@ -346,6 +347,15 @@ trait Crudlfix
             $rules = is_callable($cfg->rules)
                 ? call_user_func($cfg->rules, $request, $model)
                 : $cfg->rules[$action] ?? $cfg->rules;
+
+            // Resolve {{id}} placeholder against the model being updated,
+            // so rules like unique:table,col,{{id}} exclude the current record.
+            if ($model && $model->getKey()) {
+                $id = $model->getKey();
+                $rules = collect($rules)->map(function ($rule) use ($id) {
+                    return is_string($rule) ? str_replace('{{id}}', $id, $rule) : $rule;
+                })->all();
+            }
 
             return $request->validate($rules);
         }

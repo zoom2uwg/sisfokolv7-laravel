@@ -23,6 +23,7 @@ class KurikulumController extends Controller
             'route'     => 'kurikulum',
             'authorize' => 'kurikulum',
             'authType'  => 'policy',
+            'varName'   => 'kurikulumList',
             'search'    => ['kurikulum_id', 'nama_kurikulum', 'deskripsi'],
             'filters'   => [
                 'status_aktif' => ['column' => 'status_aktif', 'operator' => '='],

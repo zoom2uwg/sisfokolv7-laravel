@@ -23,6 +23,7 @@ class KomponenKompetensiController extends Controller
             'route'     => 'kurikulum.komponen',
             'authorize' => 'kurikulum',
             'authType'  => 'policy',
+            'varName'   => 'komponenList',
             'with'      => ['struktur.kurikulum'],
             'search'    => ['kode_kompetensi', 'teks_kompetensi'],
             'rules'     => [
