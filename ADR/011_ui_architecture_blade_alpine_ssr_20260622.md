@@ -345,7 +345,7 @@ Fitur export CSV sudah diimplementasikan di `HasCrudlfixActions` tapi belum teru
 | Dokumen | Lokasi | Deskripsi |
 |---------|--------|-----------|
 | Livewire Crudlfix Guide | `DEV_DOCS/072_panduan_livewire_crudlfix_hybrid_20260626.md` | Panduan penggunaan untuk developer |
-| Dev Report | `docs/dev-reports/2026-06-26-hybrid-crudlfix-livewire.md` | Laporan implementasi lengkap |
+| Dev Report | `DEV_DOCS/074_dev_report_hybrid_crudlfix_livewire_20260626.md` | Laporan implementasi lengkap |
 
 ### Existing Documents
 
