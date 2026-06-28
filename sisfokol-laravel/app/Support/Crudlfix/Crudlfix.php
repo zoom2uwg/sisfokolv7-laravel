@@ -338,9 +338,21 @@ trait Crudlfix
         $cfg = $this->config();
 
         if ($cfg->requestClass) {
+            // Resolve the FormRequest through the container so its validator,
+            // redirector and container are wired (FormRequest::validate() needs them).
+            /** @var \Illuminate\Foundation\Http\FormRequest $formRequest */
             $formRequest = app($cfg->requestClass);
             $formRequest->setContainer(app())->setRedirector(app('redirect'));
-            return $formRequest->validateResolved($request);
+
+            // Merge the incoming request data + route parameters so the FormRequest
+            // (which extends Request) can resolve its own input and route bindings.
+            $formRequest->merge($request->input());
+            $formRequest->setJson($request->json());
+            $formRequest->setRouteResolver(fn () => $request->route());
+
+            $formRequest->validateResolved();
+
+            return $formRequest->validated();
         }
 
         if ($cfg->rules) {
