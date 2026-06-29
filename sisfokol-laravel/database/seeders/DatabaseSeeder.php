@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             AttendanceTimeSeeder::class,
             UserSeeder::class,
             DemoSeeder::class,
+            JadwalSeeder::class,
             ClassroomSeeder::class,
             MenuSeeder::class,
             FieldSeeder::class,
