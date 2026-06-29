@@ -98,7 +98,7 @@
                         {{-- Actions --}}
                         <td class="px-4 py-3 text-right">
                             <div class="flex items-center justify-end gap-2">
-                                @if($routePrefix)
+                                @if($routePrefix && $showDetail)
                                     <a
                                         href="{{ route($routePrefix . '.show', $row->id) }}"
                                         class="px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 rounded-lg transition"
@@ -106,13 +106,25 @@
                                     >
                                         <i class="fas fa-eye w-3 h-3"></i>
                                     </a>
-                                    <a
-                                        href="{{ route($routePrefix . '.edit', $row->id) }}"
-                                        class="px-2 py-1 text-xs bg-indigo-600 hover:bg-indigo-500 rounded-lg transition"
-                                        title="Edit"
-                                    >
-                                        <i class="fas fa-pen w-3 h-3"></i>
-                                    </a>
+                                @endif
+                                @if($showEdit)
+                                    @if($inlineEdit)
+                                        <button
+                                            wire:click="editRecord({{ $row->id }})"
+                                            class="px-2 py-1 text-xs bg-indigo-600 hover:bg-indigo-500 rounded-lg transition"
+                                            title="Edit"
+                                        >
+                                            <i class="fas fa-pen w-3 h-3"></i>
+                                        </button>
+                                    @else
+                                        <a
+                                            href="{{ route($routePrefix . '.edit', $row->id) }}"
+                                            class="px-2 py-1 text-xs bg-indigo-600 hover:bg-indigo-500 rounded-lg transition"
+                                            title="Edit"
+                                        >
+                                            <i class="fas fa-pen w-3 h-3"></i>
+                                        </a>
+                                    @endif
                                 @endif
                                 <button
                                     wire:click="confirmDelete({{ $row->id }})"

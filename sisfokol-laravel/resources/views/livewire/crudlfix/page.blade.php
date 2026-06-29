@@ -60,6 +60,7 @@
             'exportColumns' => null,
             'authorize' => $permissionPrefix,
             'authType' => $authMode,
+            'showDetail' => $showDetail,
         ], key('table-' . $routePrefix))
 
     @elseif($mode === 'create')
@@ -70,6 +71,7 @@
             'rules' => $validationRules,
             'viewData' => $extraViewData,
             'isEdit' => false,
+            'controller' => $controllerClass,
         ], key('form-create-' . $routePrefix))
 
     @elseif($mode === 'edit')
@@ -81,6 +83,7 @@
             'viewData' => $extraViewData,
             'isEdit' => true,
             'editId' => $editId,
+            'controller' => $controllerClass,
         ], key('form-edit-' . $editId))
 
     @elseif($mode === 'show')
