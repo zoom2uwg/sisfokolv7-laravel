@@ -20,7 +20,7 @@ class DaySeeder extends Seeder
         ];
 
         foreach ($days as $day) {
-            Day::create($day);
+            Day::firstOrCreate(['number' => $day['number']], $day);
         }
     }
 }

@@ -163,9 +163,11 @@ class SiswaCrudTest extends TestCase
         $siswa2 = Siswa::factory()->create(['tenant_id' => $this->tenant2->id]);
 
         // Clear TenantContext before GET request
+        // Note: Crudlfix::resolveModel() intentionally aborts 404 (not 403) for
+        // cross-tenant access to avoid revealing that the record exists.
         app(TenantContext::class)->clear();
         $response = $this->actingAs($this->admin1)->get("/academic/siswa/{$siswa2->id}");
-        $response->assertStatus(403);
+        $response->assertStatus(404);
 
         // Clear TenantContext before PUT request
         app(TenantContext::class)->clear();
@@ -175,11 +177,11 @@ class SiswaCrudTest extends TestCase
             'jenis_kelamin' => 'L',
             'status' => 'aktif',
         ]);
-        $response->assertStatus(403);
+        $response->assertStatus(404);
 
         // Clear TenantContext before DELETE request
         app(TenantContext::class)->clear();
         $response = $this->actingAs($this->admin1)->delete("/academic/siswa/{$siswa2->id}");
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     }
 }

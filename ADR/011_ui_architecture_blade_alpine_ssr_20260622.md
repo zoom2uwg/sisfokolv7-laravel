@@ -1,56 +1,164 @@
-# ADR-011: UI Architecture — Blade SSR + Alpine.js (Hybrid Modern)
+# ADR-011: UI Architecture — Blade SSR + Alpine.js + Livewire Hybrid
 
-- **Tanggal:** 2026-06-22
-- **Status:** ✅ DISETUJUI
+- **Tanggal:** 2026-06-22 (Updated: 2026-06-26)
+- **Status:** ✅ DISETUJUI (Updated)
 - **Penulis:** ZCode (berdasarkan diskusi arsitektur)
-- **Konteks:** DEV_DOCS-053, DEV_DOCS-053b
+- **Konteks:** DEV_DOCS-053, DEV_DOCS-053b, Hybrid Crudlfix + Livewire Implementation
 
 ---
 
-## Keputusan
+## Ringkasan Eksekutif
 
-Kita menggunakan **Blade SSR + Alpine.js + Tailwind CSS** sebagai arsitektur UI untuk Fase 1 (MVP), dengan API layer (Sanctum) diimplementasikan di Fase 2 setelah seluruh infrastruktur MVC selesai dan fungsional.
+ADR-011 diupdate dari pendekatan **Blade SSR + Alpine.js** menjadi **Hybrid (Blade SSR + Alpine.js + Livewire)** untuk operasi CRUD. Perubahan ini bertujuan memberikan real-time validation, no-reload table operations, dan better UX pada Crudlfix Library tanpa mengubah backend logic.
 
----
-
-## Konteks
-
-Aplikasi SISFOKOL v7 saat ini adalah **Blade-SSR monolith** dengan:
-- Dark theme premium (slate-950 background)
-- Tailwind CSS (CDN + Vite)
-- Alpine.js (sudah dipakai di beberapa view)
-- Plus Jakarta Sans font
-- Glassmorphism card effects
-- Responsive sidebar (desktop fixed + mobile off-canvas)
-
-Pertanyaan yang muncul: apakah perlu beralih ke Livewire untuk reactivity yang lebih baik?
+**Key Decision:** Livewire v4 diintegrasikan secara selektif HANYA untuk operasi CRUD (form, tabel, modal). Halaman non-CRUD (dashboard, reports, settings) tetap menggunakan Blade SSR + Alpine.js.
 
 ---
 
-## Opsi yang Dipertimbangkan
+## Konteks & Motivasi
+
+### Kondisi Sebelum Update (ADR-011 v1)
+
+| Aspek | Teknologi |
+|-------|-----------|
+| Framework | Laravel 11.31 |
+| Rendering | Blade SSR |
+| CSS | Tailwind CSS 3.4 (CDN + Vite) |
+| JS | Alpine.js v3 (CDN) |
+| Build | Vite 6 |
+| CRUD Library | Custom "Crudlfix" trait |
+| Livewire | TIDAK terinstall |
+
+### Masalah dengan Pendekatan Sebelumnya
+
+1. **No real-time validation** — Error muncul setelah submit form (full page reload)
+2. **Page reload untuk setiap interaksi** — Search, sort, filter, pagination semua reload
+3. **UX kurang smooth** — Loading state tidak optimal, tidak ada optimistic UI
+4. **Duplikasi kode di views** — Setiap CRUD view menulis ulang table/form markup
+
+### Tujuan Update
+
+1. Real-time validation di form (error saat mengetik)
+2. Search, sort, filter, pagination tanpa page reload
+3. Better loading states dan UX
+4. Reusable base components untuk semua CRUD
+5. Minimal disruption ke backend (Crudlfix trait tidak berubah)
+6. Incremental migration (bisa satu per satu controller)
+
+---
+
+## Keputusan yang Diambil
+
+### Opsi yang Dipertimbangkan
 
 | Opsi | Server Load | Client Load | Complexity | Existing Code |
 |------|------------|-------------|------------|---------------|
-| **A. Blade + Alpine.js** | ⭐⭐⭐⭐⭐ Paling ringan | ⭐⭐⭐⭐ ~15KB | ⭐⭐⭐⭐⭐ Tidak ada dep baru | ⭐⭐⭐⭐⭐ Sudah dipakai |
+| A. Blade + Alpine.js (Status Quo) | ⭐⭐⭐⭐⭐ Paling ringan | ⭐⭐⭐⭐ ~15KB | ⭐⭐⭐⭐⭐ Tidak ada dep baru | ⭐⭐⭐⭐⭐ Sudah dipakai |
 | B. Blade + Alpine + HTMX | ⭐⭐⭐⭐ Ringan | ⭐⭐⭐⭐ ~29KB | ⭐⭐⭐ Tambah 1 dep | ⭐⭐⭐ Perlu refactor |
-| C. Livewire | ⭐⭐ Berat | ⭐⭐⭐ ~30KB+ | ⭐⭐ Tambah dep besar | ⭐⭐ Perlu rewrite |
+| **C. Hybrid (Blade + Alpine + Livewire untuk CRUD)** | ⭐⭐⭐⭐ Cukup ringan | ⭐⭐⭐ ~30KB | ⭐⭐⭐⭐ Tambah dep tapi terkontrol | ⭐⭐⭐⭐⭐ Incremental migration |
+| D. Full Livewire | ⭐⭐ Berat | ⭐⭐⭐ ~30KB+ | ⭐⭐ Tambah dep besar | ⭐⭐ Perlu rewrite |
+
+### Keputusan: Opsi C — Hybrid (Blade + Alpine + Livewire untuk CRUD)
+
+**Alasan:**
+
+1. **Minimal disruption** — Backend Crudlfix trait tidak berubah
+2. **Incremental migration** — Bisa pindah satu controller per waktu
+3. **Reusable components** — Base Livewire components dipakai di semua CRUD
+4. **Real-time validation** — Error muncul saat user mengetik
+5. **No page reload** — Search, sort, filter, pagination tanpa reload
+6. **Backward compatible** — Existing views masih work
+
+**Trade-off:**
+
+1. **+2MB dependency** — Livewire package
+2. **Server load meningkat** — Setiap interaksi = HTTP request (tapi Livewire v4 sudah optimasi)
+3. **Learning curve** — Tim perlu belajar Livewire pattern
+4. **~3 minggu implementasi** — Dari foundation sampai migrasi semua controller
 
 ---
 
-## Keputusan: Opsi A — Blade + Alpine.js
+## Arsitektur Hybrid
 
-### Alasan:
+### Overview
 
-1. **Sudah ada di codebase** — Alpine.js + Tailwind + Vite sudah terkonfigurasi
-2. **Paling ringan untuk server** — render HTML sekali, selesai, 0 state tersimpan
-3. **Tidak ada dependency baru** — tidak perlu install apa pun
-4. **Cukup untuk kebutuhan MVP** — form, dropdown, modal, search, toggle
-5. **Tidak menghambat API Fase 2** — Alpine.js bisa fetch JSON dari API endpoint
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Laravel Application                    │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │  Blade SSR + Alpine.js (Halaman Utama)              │ │
+│  │  - Dashboard                                        │ │
+│  │  - Reports                                          │ │
+│  │  - Settings                                         │ │
+│  │  - Halaman Statis Lainnya                           │ │
+│  └─────────────────────────────────────────────────────┘ │
+│                                                          │
+│  ┌─────────────────────────────────────────────────────┐ │
+│  │  Livewire Components (Operasi CRUD)                 │ │
+│  │  - CrudlfixPage (orchestrator)                      │ │
+│  │  - CrudlfixTable (search, sort, filter, pagination) │ │
+│  │  - CrudlfixForm (real-time validation)              │ │
+│  │  - CrudlfixModal (delete confirmation)              │ │
+│  └─────────────────────────────────────────────────────┘ │
+│                                                          │
+└─────────────────────────────────────────────────────────┘
+```
 
-### Apa yang TIDAK dipilih dan kenapa:
+### Komponen Livewire
 
-- **Livewire** — terlalu berat untuk shared hosting, setiap interaksi = request ke server, perlu rewrite views, dependency besar (~2MB)
-- **HTMX** — bagus tapi tidak perlu untuk fase ini, bisa ditambahkan nanti jika perlu
+| Component | Fungsi | File |
+|-----------|--------|------|
+| `CrudlfixPage` | Orchestrator — mode switching (index/create/edit/show) | `app/Livewire/Crudlfix/CrudlfixPage.php` |
+| `CrudlfixTable` | Data table — search, sort, filter, pagination | `app/Livewire/Crudlfix/CrudlfixTable.php` |
+| `CrudlfixForm` | Form — real-time validation, save | `app/Livewire/Crudlfix/CrudlfixForm.php` |
+
+### Traits (Logic Layer)
+
+| Trait | Fungsi | File |
+|-------|--------|------|
+| `HasCrudlfixTable` | Table query logic | `app/Livewire/Crudlfix/Traits/HasCrudlfixTable.php` |
+| `HasCrudlfixForm` | Form validation logic | `app/Livewire/Crudlfix/Traits/HasCrudlfixForm.php` |
+| `HasCrudlfixActions` | Delete, export logic | `app/Livewire/Crudlfix/Traits/HasCrudlfixActions.php` |
+
+### Views (Blade Templates)
+
+| View | Fungsi | File |
+|------|--------|------|
+| `page.blade.php` | Main page layout | `resources/views/livewire/crudlfix/page.blade.php` |
+| `table.blade.php` | Table with search, sort, pagination | `resources/views/livewire/crudlfix/table.blade.php` |
+| `form.blade.php` | Form with real-time validation | `resources/views/livewire/crudlfix/form.blade.php` |
+
+---
+
+## Technical Decisions
+
+### 1. Livewire v4 (bukan v3)
+
+Composer resolve ke v4.3.2 karena constraint `^3.0` compatible dengan v4. Livewire v4 lebih stabil dan memiliki performance improvements.
+
+### 2. Raw Arrays (bukan Complex Objects)
+
+Livewire tidak support passing complex objects (seperti `CrudlfixConfig`) sebagai property. Solusi: pass raw arrays, build `CrudlfixConfig` di dalam component.
+
+```php
+// ❌ Tidak work
+'config' => CrudlfixConfig::make([...])
+
+// ✅ Work
+'model' => Kelas::class,
+'route' => 'academic.kelas',
+'columns' => [...],
+```
+
+### 3. Rename `$search` → `$searchQuery`
+
+Property `$search` di trait `HasCrudlfixTable` conflict dengan parameter `$search` (array) yang dipassing dari view. Solusi: rename ke `$searchQuery` untuk input search value.
+
+### 4. Alpine.js CDN Dihapus
+
+Livewire v4 bundle Alpine.js secara internal. Loading Alpine.js via CDN akan menyebabkan conflict. Solusi: hapus CDN import, biarkan Livewire handle Alpine.js.
 
 ---
 
@@ -90,10 +198,6 @@ Loading:        Alpine.js polling + spinner animation
 Toast:          Auto-dismiss with setTimeout + x-show
 ```
 
-### 4. Reusable Components (Blade Components)
-
-Lihat file `DEV_DOCS-053c` untuk detail component library.
-
 ---
 
 ## Struktur Folder Views
@@ -101,54 +205,49 @@ Lihat file `DEV_DOCS-053c` untuk detail component library.
 ```
 resources/views/
 ├── layouts/
-│   ├── app.blade.php              ← Main layout (sudah ada)
+│   ├── app.blade.php              ← Main layout
 │   └── partials/
-│       ├── menu.blade.php         ← Sidebar menu (sudah ada)
-│       ├── navbar.blade.php       ← Top navbar (extract dari app.blade.php)
-│       ├── footer.blade.php       ← Footer (extract dari app.blade.php)
-│       └── flash.blade.php        ← Flash messages (extract dari app.blade.php)
+│       ├── menu.blade.php         ← Sidebar menu
+│       ├── navbar.blade.php       ← Top navbar
+│       ├── footer.blade.php       ← Footer
+│       └── flash.blade.php        ← Flash messages
 │
 ├── components/                    ← Reusable Blade Components
 │   ├── ui/                        ← UI primitives
-│   │   ├── alert.blade.php        ← Toast/alert notification
-│   │   ├── badge.blade.php        ← Status badge
-│   │   ├── button.blade.php       ← Button variants
-│   │   ├── card.blade.php         ← Glassmorphism card
-│   │   ├── modal.blade.php        ← Modal dialog
-│   │   ├── stat-card.blade.php    ← Dashboard stat card
-│   │   └── empty-state.blade.php  ← Empty state illustration
-│   │
 │   ├── form/                      ← Form components
-│   │   ├── input.blade.php        ← Text input with label + error
-│   │   ├── select.blade.php       ← Select dropdown
-│   │   ├── textarea.blade.php     ← Textarea
-│   │   ├── checkbox.blade.php     ← Checkbox
-│   │   └── group.blade.php        ← Form group (label + input + error)
-│   │
 │   └── table/                     ← Table components
-│       ├── table.blade.php        ← Responsive table wrapper
-│       ├── thead.blade.php        ← Table header
-│       ├── row.blade.php          ← Table row with hover
-│       └── pagination.blade.php   ← Pagination links
+│
+├── livewire/                      ← Livewire Components (NEW)
+│   └── crudlfix/
+│       ├── page.blade.php         ← Main page template
+│       ├── table.blade.php        ← Table template
+│       └── form.blade.php         ← Form template
 │
 ├── partials/                      ← Shared partials
-│   ├── impersonation_banner.blade.php  ← Sudah ada
-│   ├── search-form.blade.php      ← Reusable search form
-│   ├── delete-confirm.blade.php   ← Delete confirmation modal
-│   └── loading-spinner.blade.php  ← Loading indicator
-│
-├── auth/                          ← Auth views (sudah ada)
-├── admin/                         ← Admin views (sudah ada)
-├── academic/                      ← Academic module views (sudah ada)
-├── evaluation/                    ← Evaluation views (sudah ada)
-├── finance/                       ← Finance views (sudah ada)
-├── presence/                      ← Presence views (sudah ada)
+├── auth/                          ← Auth views
+├── admin/                         ← Admin views
+├── academic/                      ← Academic module views
+├── evaluation/                    ← Evaluation views
+├── finance/                       ← Finance views
+├── presence/                      ← Presence views
 └── ...                            ← Other module views
 ```
 
 ---
 
 ## Aturan Implementasi
+
+### Untuk Halaman CRUD (Livewire):
+
+1. **Livewire components HARUS** menggunakan raw arrays (bukan complex objects)
+2. **CrudlfixConfig** di-build di dalam component, bukan dipassing dari view
+3. **Real-time validation** menggunakan `wire:model.live`
+4. **Search** menggunakan `wire:model.live.debounce.300ms`
+5. **Pagination** tanpa page reload
+6. **Form fields** didefinisikan sebagai array di view
+7. **Columns** didefinisikan sebagai array di view
+
+### Untuk Halaman Non-CRUD (Blade SSR):
 
 1. **Semua view HARUS** menggunakan `layouts/app.blade.php` sebagai parent
 2. **Komponen reusable** menggunakan Blade component syntax (`<x-ui.card>`)
@@ -163,13 +262,149 @@ resources/views/
 
 ---
 
-## Referensi
+## Dependencies
 
-- **ADR-002** — Rebuild sebagai Laravel 11 modular monolith
-- **DEV_DOCS-053** — Master implementation plan
-- **DEV_DOCS-053b** — Verifikasi API-Driven MVC
-- **layouts/app.blade.php** — Existing layout (sudah modern)
+### Composer
+
+```json
+{
+    "require": {
+        "livewire/livewire": "^4.0"
+    }
+}
+```
+
+### NPM
+
+Tidak ada dependency baru — Livewire v4 sudah include Alpine.js.
+
+### Config Changes
+
+- `config/livewire.php` — Published dan tersedia
+- `resources/views/layouts/app.blade.php` — `@livewireStyles` dan `@livewireScripts` ditambahkan
+
+---
+
+## Implementasi yang Sudah Selesai
+
+### Phase 1: Foundation (DONE)
+
+- ✅ Install Livewire v4.3.2
+- ✅ Publish Livewire config
+- ✅ Update layout (`@livewireStyles`, `@livewireScripts`)
+- ✅ Hapus Alpine.js CDN (Livewire bundle Alpine.js)
+
+### Phase 2: Base Components (DONE)
+
+- ✅ `HasCrudlfixTable` trait
+- ✅ `HasCrudlfixForm` trait
+- ✅ `HasCrudlfixActions` trait
+- ✅ `CrudlfixPage` component
+- ✅ `CrudlfixTable` component
+- ✅ `CrudlfixForm` component
+
+### Phase 3: Pilot Migration (DONE)
+
+- ✅ KelasController Livewire view
+- ✅ Test route `/academic/kelas-livewire`
+- ✅ Documentation
+
+---
+
+## Known Issues & Limitations
+
+### 1. Show Mode Belum Diimplementasikan
+
+View untuk mode "show" (detail) belum dibuat. Hanya placeholder.
+
+### 2. Cascade Select Belum Support
+
+Fitur cascade select (dropdown yang bergantung pada dropdown lain) belum diimplementasikan di Livewire version.
+
+### 3. Search Select Belum Support
+
+Fitur search select (AJAX dropdown) belum diimplementasikan.
+
+### 4. Export Belum Teruji
+
+Fitur export CSV sudah diimplementasikan di `HasCrudlfixActions` tapi belum teruji di Livewire context.
+
+---
+
+## Referensi Dokumen
+
+### Design & Planning
+
+| Dokumen | Lokasi | Deskripsi |
+|---------|--------|-----------|
+| Design Spec | `docs/superpowers/specs/2026-06-26-hybrid-crudlfix-livewire-design.md` | Spesifikasi desain hybrid approach |
+| Implementation Plan | `docs/superpowers/plans/2026-06-26-hybrid-crudlfix-livewire.md` | Detail implementasi step-by-step |
+
+### Documentation
+
+| Dokumen | Lokasi | Deskripsi |
+|---------|--------|-----------|
+| Livewire Crudlfix Guide | `DEV_DOCS/072_panduan_livewire_crudlfix_hybrid_20260626.md` | Panduan penggunaan untuk developer |
+| Dev Report | `DEV_DOCS/074_dev_report_hybrid_crudlfix_livewire_20260626.md` | Laporan implementasi lengkap |
+
+### Existing Documents
+
+| Dokumen | Lokasi | Deskripsi |
+|---------|--------|-----------|
+| ADR-002 | `ADR/002_*.md` | Rebuild sebagai Laravel 11 modular monolith |
+| ADR-003 | `ADR/003_*.md` | Multi-tenant SaaS shared-DB |
+| ADR-006 | `ADR/006_*.md` | Granular DB-driven RBAC |
+| ADR-009 | `ADR/009_*.md` | Plugin system plug-and-play |
+| ADR-010 | `ADR/010_*.md` | RBAC sampai menu & field level |
+| DEV_DOCS-053 | `DEV_DOCS/053_*.md` | Master implementation plan |
+| DEV_DOCS-053b | `DEV_DOCS/053b_*.md` | Verifikasi API-Driven MVC |
+| DEV_DOCS-053c | `DEV_DOCS/053c_*.md` | Reusable component library spec |
+| DEV_DOCS-054 | `DEV_DOCS/054_*.md` | Memory/handoff konteks terkini |
+
+### External References
+
+| Resource | URL | Deskripsi |
+|----------|-----|-----------|
+| Livewire v4 Documentation | https://livewire.laravel.com/docs | Official Livewire docs |
+| Laravel 11 Documentation | https://laravel.com/docs/11 | Laravel 11 docs |
+| Tailwind CSS | https://tailwindcss.com/docs | Tailwind CSS docs |
+| Alpine.js | https://alpinejs.dev/start-here | Alpine.js docs |
+
+---
+
+## Changelog
+
+| Tanggal | Versi | Perubahan | Oleh |
+|---------|-------|-----------|------|
+| 2026-06-22 | v1.0 | ADR-011 awal: Blade SSR + Alpine.js | ZCode |
+| 2026-06-26 | v2.0 | Update: Tambah Livewire v4 untuk CRUD operations | ZCode |
+| 2026-06-26 | v2.1 | Tambah konteks, referensi dokumen, technical decisions | ZCode |
+
+---
+
+## Catatan untuk Agentic AI
+
+### Antigravity (Google DeepMind)
+- Gunakan Livewire components untuk operasi CRUD baru
+- Ikuti pattern di `DEV_DOCS/072_panduan_livewire_crudlfix_hybrid_20260626.md`
+- Jangan gunakan complex objects sebagai Livewire property
+
+### Kiro (kiro.dev)
+- Referensi ke `.kiro/` untuk skills dan workflows
+- Livewire components di `app/Livewire/Crudlfix/`
+- Blade views di `resources/views/livewire/crudlfix/`
+
+### Opencode
+- Shared steering di `.agents/steering/`
+- Follow Karpathy Guidelines untuk coding standards
+- Backup sebelum edit file kritis
+
+### ZCode
+- Skills di `.zcode/`
+- Gunakan `smart-debugging` skill untuk investigasi error
+- Follow `safe-file-edit` workflow untuk edit file
 
 ---
 
 *Keputusan ini mengikat untuk seluruh pengembangan UI/UX di Fase 1.*
+*Last Updated: 2026-06-26 oleh ZCode*

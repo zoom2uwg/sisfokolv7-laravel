@@ -24,6 +24,7 @@ class StrukturKurikulumController extends Controller
             'route'     => 'kurikulum.struktur',
             'authorize' => 'kurikulum',
             'authType'  => 'policy',
+            'varName'   => 'strukturList',
             'with'      => ['kurikulum'],
             'search'    => ['jenjang', 'kelas', 'fase'],
             'filters'   => [

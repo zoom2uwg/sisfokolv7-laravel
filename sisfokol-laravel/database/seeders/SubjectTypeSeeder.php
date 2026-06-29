@@ -17,7 +17,7 @@ class SubjectTypeSeeder extends Seeder
         ];
 
         foreach ($types as $type) {
-            SubjectType::create($type);
+            SubjectType::firstOrCreate(['code' => $type['code']], $type);
         }
     }
 }

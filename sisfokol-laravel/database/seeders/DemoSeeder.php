@@ -19,6 +19,12 @@ class DemoSeeder extends Seeder
 {
     public function run(): void
     {
+        // ─── Guard: skip jika data demo sudah ada ─────────────────────────
+        if (Tenant::where('npsn', '20000001')->exists()) {
+            $this->command->warn('⚠️  DemoSeeder dilewati — data demo sudah ada.');
+            return;
+        }
+
         // ─── 1. Buat Tenant Demo ───────────────────────────────────────────
         $tenant = Tenant::create([
             'nama'     => 'SMA Demo Sisfokol',
@@ -125,6 +131,27 @@ class DemoSeeder extends Seeder
                 'email'    => 'walikelas@smademo.sch.id',
                 'tipe'     => 'pegawai',
                 'role'     => 'homeroom-teacher',
+            ],
+            [
+                'username' => 'waka.kurikulum.demo',
+                'nama'     => 'Waka Kurikulum Demo',
+                'email'    => 'wakakurikulum@smademo.sch.id',
+                'tipe'     => 'pegawai',
+                'role'     => 'waka-kurikulum',
+            ],
+            [
+                'username' => 'waka.kesiswaan.demo',
+                'nama'     => 'Waka Kesiswaan Demo',
+                'email'    => 'wakakesiswaan@smademo.sch.id',
+                'tipe'     => 'pegawai',
+                'role'     => 'waka-kesiswaan',
+            ],
+            [
+                'username' => 'waka.sarpras.demo',
+                'nama'     => 'Waka Sarpras Demo',
+                'email'    => 'wakasarpras@smademo.sch.id',
+                'tipe'     => 'pegawai',
+                'role'     => 'waka-sarpras',
             ],
         ];
 

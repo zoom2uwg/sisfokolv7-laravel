@@ -10,15 +10,19 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::create([
-            'username' => 'admin',
-            'nama' => 'Administrator',
-            'email' => 'admin@sisfokol.test',
-            'password' => Hash::make('password'),
-            'aktif' => true,
-            'tipe' => 'admin_sekolah',
-        ]);
+        $admin = User::updateOrCreate(
+            ['username' => 'admin'],
+            [
+                'nama'     => 'Administrator',
+                'email'    => 'admin@sisfokol.test',
+                'password' => Hash::make('password'),
+                'aktif'    => true,
+                'tipe'     => 'admin_sekolah',
+            ]
+        );
 
-        $admin->assignRole('admin');
+        if (! $admin->hasRole('admin')) {
+            $admin->assignRole('admin');
+        }
     }
 }

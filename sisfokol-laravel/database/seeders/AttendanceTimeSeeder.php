@@ -16,22 +16,24 @@ class AttendanceTimeSeeder extends Seeder
             return;
         }
 
-        AttendanceTime::create([
-            'academic_year_id' => $academicYear->id,
-            'type' => 'in',
-            'start_time' => '06:30:00',
-            'end_time' => '07:30:00',
-            'is_active' => true,
-            'description' => 'Waktu presensi hadir',
-        ]);
+        AttendanceTime::firstOrCreate(
+            ['academic_year_id' => $academicYear->id, 'type' => 'in'],
+            [
+                'start_time'  => '06:30:00',
+                'end_time'    => '07:30:00',
+                'is_active'   => true,
+                'description' => 'Waktu presensi hadir',
+            ]
+        );
 
-        AttendanceTime::create([
-            'academic_year_id' => $academicYear->id,
-            'type' => 'out',
-            'start_time' => '14:00:00',
-            'end_time' => '15:00:00',
-            'is_active' => true,
-            'description' => 'Waktu presensi pulang',
-        ]);
+        AttendanceTime::firstOrCreate(
+            ['academic_year_id' => $academicYear->id, 'type' => 'out'],
+            [
+                'start_time'  => '14:00:00',
+                'end_time'    => '15:00:00',
+                'is_active'   => true,
+                'description' => 'Waktu presensi pulang',
+            ]
+        );
     }
 }

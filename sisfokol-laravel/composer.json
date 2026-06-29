@@ -11,6 +11,7 @@
         "lab404/laravel-impersonate": "^1.7",
         "laravel/framework": "^11.31",
         "laravel/tinker": "^2.9",
+        "livewire/livewire": "^4.3",
         "maatwebsite/excel": "^3.1",
         "simplesoftwareio/simple-qrcode": "^4.0",
         "spatie/laravel-permission": "^6.4"

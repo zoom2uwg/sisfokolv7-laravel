@@ -27,9 +27,10 @@ class ClassroomSeeder extends Seeder
         ];
 
         foreach ($classrooms as $classroom) {
-            Classroom::create(array_merge($classroom, [
-                'academic_year_id' => $academicYear->id,
-            ]));
+            Classroom::firstOrCreate(
+                ['name' => $classroom['name'], 'academic_year_id' => $academicYear->id],
+                array_merge($classroom, ['academic_year_id' => $academicYear->id])
+            );
         }
     }
 }

@@ -39,6 +39,14 @@ trait Crudlfix
     }
 
     /**
+     * Get CrudlfixConfig instance for Livewire components.
+     */
+    public function getCrudlfixConfig(): CrudlfixConfig
+    {
+        return $this->config();
+    }
+
+    /**
      * Resolve model from route parameter WITH tenant isolation.
      *
      * ADR-003: Models using BelongsToTenant trait have global scope.
@@ -169,7 +177,7 @@ trait Crudlfix
 
     // ─── CREATE (form) ──────────────────────────────────────────────
 
-    public function create(): View
+    public function create()
     {
         $cfg = $this->config();
         $this->authorizeCrudlfix('create');
@@ -178,7 +186,14 @@ trait Crudlfix
             'config' => $cfg,
         ]);
 
-        return view("{$cfg->view}.create", $data);
+        $viewName = "{$cfg->view}.create";
+        if (!view()->exists($viewName)) {
+            // [2026-06-29 | AG] Fallback to index if traditional create view is missing
+            return redirect()->route("{$cfg->route}.index", ['action' => 'create']);
+        }
+
+        // return view("{$cfg->view}.create", $data); // [2026-06-29 | AG] commented for fallback support
+        return view($viewName, $data);
     }
 
     // ─── STORE ──────────────────────────────────────────────────────
@@ -207,7 +222,7 @@ trait Crudlfix
 
     // ─── SHOW ───────────────────────────────────────────────────────
 
-    public function show(Request $request): View
+    public function show(Request $request)
     {
         $cfg = $this->config();
         $model = $this->resolveModel($cfg->singularVar());
@@ -222,12 +237,22 @@ trait Crudlfix
             'config' => $cfg,
         ]);
 
-        return view("{$cfg->view}.show", $data);
+        $viewName = "{$cfg->view}.show";
+        if (!view()->exists($viewName)) {
+            // [2026-06-29 | AG] Fallback to index with parameters if traditional show view is missing
+            return redirect()->route("{$cfg->route}.index", [
+                'action' => 'show',
+                'editId' => $model->getKey()
+            ]);
+        }
+
+        // return view("{$cfg->view}.show", $data); // [2026-06-29 | AG] commented for fallback support
+        return view($viewName, $data);
     }
 
     // ─── EDIT (form) ────────────────────────────────────────────────
 
-    public function edit(Request $request): View
+    public function edit(Request $request)
     {
         $cfg = $this->config();
         $model = $this->resolveModel($cfg->singularVar());
@@ -238,7 +263,17 @@ trait Crudlfix
             'config' => $cfg,
         ]);
 
-        return view("{$cfg->view}.edit", $data);
+        $viewName = "{$cfg->view}.edit";
+        if (!view()->exists($viewName)) {
+            // [2026-06-29 | AG] Fallback to index with parameters if traditional edit view is missing
+            return redirect()->route("{$cfg->route}.index", [
+                'action' => 'edit',
+                'editId' => $model->getKey()
+            ]);
+        }
+
+        // return view("{$cfg->view}.edit", $data); // [2026-06-29 | AG] commented for fallback support
+        return view($viewName, $data);
     }
 
     // ─── UPDATE ─────────────────────────────────────────────────────
@@ -330,14 +365,36 @@ trait Crudlfix
         $cfg = $this->config();
 
         if ($cfg->requestClass) {
-            $formRequest = new $cfg->requestClass();
-            return $formRequest->validateResolved($request);
+            // Resolve the FormRequest through the container so its validator,
+            // redirector and container are wired (FormRequest::validate() needs them).
+            /** @var \Illuminate\Foundation\Http\FormRequest $formRequest */
+            $formRequest = app($cfg->requestClass);
+            $formRequest->setContainer(app())->setRedirector(app('redirect'));
+
+            // Merge the incoming request data + route parameters so the FormRequest
+            // (which extends Request) can resolve its own input and route bindings.
+            $formRequest->merge($request->input());
+            $formRequest->setJson($request->json());
+            $formRequest->setRouteResolver(fn () => $request->route());
+
+            $formRequest->validateResolved();
+
+            return $formRequest->validated();
         }
 
         if ($cfg->rules) {
             $rules = is_callable($cfg->rules)
                 ? call_user_func($cfg->rules, $request, $model)
                 : $cfg->rules[$action] ?? $cfg->rules;
+
+            // Resolve {{id}} placeholder against the model being updated,
+            // so rules like unique:table,col,{{id}} exclude the current record.
+            if ($model && $model->getKey()) {
+                $id = $model->getKey();
+                $rules = collect($rules)->map(function ($rule) use ($id) {
+                    return is_string($rule) ? str_replace('{{id}}', $id, $rule) : $rule;
+                })->all();
+            }
 
             return $request->validate($rules);
         }

@@ -23,7 +23,7 @@ class HourSeeder extends Seeder
         ];
 
         foreach ($hours as $hour) {
-            Hour::create($hour);
+            Hour::firstOrCreate(['order' => $hour['order']], $hour);
         }
     }
 }
