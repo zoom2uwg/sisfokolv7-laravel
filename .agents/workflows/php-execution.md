@@ -1,59 +1,85 @@
 ---
-description: how to run PHP commands (artisan, scripts) for this repo using PHP 7.4
+description: how to run PHP commands (artisan, scripts) for this repo using PHP 8.3
 ---
 
-# PHP 7.4 Execution Rule for massetyppiwm
+# PHP 8.3 Execution Rule for sisfokolv7
 
-This repo requires **PHP 7.4** (Laravel 5.8 compatibility).  
-Always use the full path to PHP 7.4 binary instead of the system `php` command.
+This repo requires **PHP 8.3** (Laravel 11; project standard = 8.3.31).
+**Never use the bare `php` command** — on this machine `php` resolves to PHP 8.2.30,
+which is *not* the project standard. Always use `php83`.
 
-## PHP 7.4 Binary Path
+## The `php83` command
+
+`php83` is a `.bat` alias that points to the PHP 8.3.31 binary:
 
 ```
-D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe
+D:\laragon\bin\php\php-8.3.31-nts-Win32-vs16-x64\php.exe
 ```
 
-## Running php artisan
+## How to invoke — by shell
 
-// turbo
-Replace `php artisan` with the full path:
+### PowerShell / cmd
 
 ```powershell
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan <command>
+php83 artisan <command>
+php83 D:\composer\composer.phar <command>
 ```
 
-**Examples:**
-```powershell
-# Run migrations
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan migrate
+### Git Bash (use the `.bat` extension — bare `php83` is not found here)
 
-# Run seeder
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan db:seed
+```bash
+php83.bat artisan <command>
+php83.bat -l <file.php>
+php83.bat D:/composer/composer.phar <command>
 
-# Run specific seeder
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan db:seed --class=BrandSeeder
-
-# Clear cache
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan cache:clear
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan config:clear
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan view:clear
-
-# Run tests
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan test
-
-# Tinker
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" artisan tinker
+# or equivalently:
+cmd //c "php83 artisan <command>"
 ```
 
-## Running PHP Scripts Directly
+> The bare `php` in Git Bash = `/d/laragon/bin/php/php-8.2.30-Win32-vs16-x64/php` (PHP 8.2.30).
+> It runs, but it is **not** the project standard. Always prefer `php83`.
 
-```powershell
-& "D:\laragon\bin\php\php-7.4.33-Win32-vc15-x64\php.exe" <script.php>
+## Common commands
+
+```bash
+# Artisan
+php83.bat artisan migrate
+php83.bat artisan db:seed
+php83.bat artisan test
+php83.bat artisan tinker
+
+# Clear caches
+php83.bat artisan cache:clear
+php83.bat artisan config:clear
+php83.bat artisan view:clear
+php83.bat artisan route:clear
+
+# Lint a single PHP file
+php83.bat -l app/Livewire/Crudlfix/CrudlfixPage.php
+
+# Composer
+php83.bat D:/composer/composer.phar install
+php83.bat D:/composer/composer.phar require <package>
 ```
 
-## Working Directory
+## Working directory
 
-Always run from the `core` directory:
+Always run from the Laravel app directory:
+
 ```
-d:\laragon\www\massetyppiwm\core
+D:\laragon\www\sisfokolv7\sisfokol-laravel
 ```
+
+The root project (`D:\laragon\www\sisfokolv7`) holds `ADR/`, `DEV_DOCS/`, `DOCS/`,
+`.agents/` — but `artisan` and `composer.json` live in `sisfokol-laravel/`.
+
+## Why not the default `php`?
+
+| Command | Version | OK? |
+|---------|---------|-----|
+| `php` (Git Bash default) | 8.2.30 | ⚠️ works, but not the project standard |
+| `php83` / `php83.bat` | 8.3.31 | ✅ project standard |
+
+Standardizing on 8.3 avoids subtle behavior differences (enum cases, readonly
+property edge cases, `#[\Override]` attribute, etc.) between the developer
+machine and the intended runtime.
