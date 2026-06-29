@@ -15,7 +15,9 @@ Route::middleware(['web', 'auth'])
         Route::post('/scan', [PresensiController::class, 'storeScan'])->name('scan.store');
 
         // Rekap Kehadiran
-        Route::get('/rekap', [PresensiController::class, 'index'])->name('rekap');
+        Route::get('/rekap', [PresensiController::class, 'index'])
+            ->middleware('throttle:60,1')
+            ->name('rekap');
 
         // Absensi (Alpa)
         Route::prefix('absensi')->name('absensi.')->group(function () {

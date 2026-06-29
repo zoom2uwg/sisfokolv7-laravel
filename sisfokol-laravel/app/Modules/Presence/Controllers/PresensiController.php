@@ -73,6 +73,12 @@ class PresensiController extends Controller
     {
         Gate::authorize('viewAny', Attendance::class);
 
+        // [2026-06-29 | AG] Validate date and status query parameters strictly
+        $request->validate([
+            'date'   => 'nullable|date_format:Y-m-d',
+            'status' => 'nullable|in:present,late,early',
+        ]);
+
         $query = Attendance::with('attendable')
             ->latest('date');
 
